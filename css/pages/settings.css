@@ -1,0 +1,167 @@
+/* ===============================
+   Settings Page
+   =============================== */
+
+.page-title {
+  font-size: 1.4rem;
+  margin-bottom: 1.5rem;
+  color: #111;
+}
+
+/* Card container */
+.settings-card {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+
+
+/* Section titles */
+.settings-card h2 {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  color: #222;
+}
+
+/* Each setting row */
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  gap: 1rem;
+}
+
+.password-fields {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+/* Labels */
+.setting-row label {
+  font-size: 0.85rem;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+/* Inputs */
+.setting-row input[type="checkbox"] {
+  accent-color: #000;
+}
+
+.setting-row input[type="email"],
+.setting-row select {
+  padding: 0.45rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.8rem;
+  min-width: 180px;
+}
+
+.setting-row input[disabled] {
+  background: #f3f4f6;
+  color: #777;
+}
+
+.password-fields input[type="password"] {
+  padding: 0.45rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.8rem;
+  width: 100%;
+}
+
+.password-fields input::placeholder {
+  color: #999;
+}
+
+.setting-row button {
+  width: 100%;
+}
+
+/* Action buttons */
+.settings-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+.settings-actions .primary {
+  padding: 0.5rem 1.1rem;
+  border-radius: 6px;
+  border: none;
+  background: #000;
+  color: #fff;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+/* Danger button */
+button.danger {
+  padding: 0.45rem 0.9rem;
+  border-radius: 6px;
+  border: 1px solid #dc2626;
+  background: transparent;
+  color: #dc2626;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+button.danger:hover {
+  background: #fee2e2;
+}
+
+.password-fields .primary {
+  margin-top: 0.4rem;
+  align-self: flex-start;
+  padding: 0.5rem 1.1rem;
+  border-radius: 6px;
+  border: none;
+  background: #000;
+  color: #fff;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.password-fields .primary:hover {
+  opacity: 0.9;
+}
+
+/* ===============================
+   Responsive (Mobile)
+   =============================== */
+@media (max-width: 768px) {
+
+  .settings-card {
+    padding: 1rem;
+  }
+
+  .setting-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .setting-row input[type="email"],
+  .setting-row select {
+   width: 100%;
+  min-width: 0;      /* 🔥 important */
+  } 
+
+  .settings-actions {
+    justify-content: stretch;
+  }
+
+  .settings-actions .primary {
+    width: 100%;
+  }
+
+
+}
