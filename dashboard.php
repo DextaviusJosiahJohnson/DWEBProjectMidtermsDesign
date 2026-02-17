@@ -1,13 +1,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">  
-<title>Dashboard </title>
+<title>Dashboard|Smart Browser State Manager </title>
   <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/pages/dashboard.css">
 </head>
 <body>
-
 
 <!--=============================================
             NAVIGATION (SIDEBAR)

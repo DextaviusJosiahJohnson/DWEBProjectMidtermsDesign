@@ -48,25 +48,57 @@
         <option>Every 15 minutes</option>
         <option>Every 30 minutes</option>
         <option selected>Every hour</option>
-        <option>Manual only</option>//make this responsive on mobile
+        <option>Manual only</option>
       </select>
     </div>
   </section>
 
-  <section class="settings-card">
-    <h2>Security</h2>
+  <section class="settings-card security-card">
+  <h2>Security</h2>
 
-    <div class="setting-row setting-row--column">
-      <label>Change Password</label>
+  <div class="security-description">
+    <p>Update your account password to keep your account secure.</p>
+    <button class="secondary" id="togglePasswordBtn">
+      Change Password
+    </button>
+  </div>
 
-      <div class="password-fields">
-        <input type="password" placeholder="Current password">
-        <input type="password" placeholder="New password">
-        <input type="password" placeholder="Confirm new password">
-        <button class="primary">Update Password</button> //make this functional
+  <!-- Collapsible Container -->
+  <div class="password-collapse" id="passwordCollapse">
+    <form class="password-form" id="passwordForm" novalidate>
+      
+      <div class="form-group">
+        <label for="currentPassword">Current password</label>
+        <input type="password" id="currentPassword" required>
       </div>
-    </div>
-  </section>
+
+      <div class="form-group">
+        <label for="newPassword">New password</label>
+        <input type="password" id="newPassword" required>
+        
+        <!-- Strength Indicator -->
+        <div class="strength-wrapper">
+          <div class="strength-bar" id="strengthBar"></div>
+        </div>
+        <small id="strengthText"></small>
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword">Confirm new password</label>
+        <input type="password" id="confirmPassword" required>
+        <small class="error-message" id="matchError"></small>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="primary">
+          Update Password
+        </button>
+      </div>
+
+    </form>
+  </div>
+</section>
+
 
   <section class="settings-card">
     <h2>Account</h2>
@@ -79,8 +111,6 @@
      <div class="setting-row ">
       <button class="danger" id="delete">Delete Account</button>
   </div>
-
-  <?php include 'includes/delete-confirmation.php'; ?>
   </section>
 
 
@@ -89,16 +119,12 @@
     <button class="primary">Save Changes</button>
   </div>
 
-  
 </main>
-
-<script src="script/nav.js" ></script>
 
 </body>
 </html>
 
 <script src="script/modal.js"></script> 
-
-
-
-
+<script src="script/nav.js" ></script>
+<script src="script/settings.js" ></script>
+<?php include 'includes/delete-confirmation.php'; ?>

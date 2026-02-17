@@ -1,5 +1,5 @@
 <head>
-    <title>SBSM</title>
+    <title>Smart Browser State Manager</title>
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/pages/landing.css">  
 </head>

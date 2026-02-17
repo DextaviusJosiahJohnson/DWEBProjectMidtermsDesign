@@ -13,7 +13,7 @@
       <p><strong>Date:</strong> Jan 25, 2026</p>
       <p><strong>Browser:</strong> Chrome</p>
 
-      <!--MAKE THIS FUNCTIONAL, VIA LOOP?? FROM THE BACKEND-->
+      <!--MAKE THIS FUNCTIONAL-->
       <h3>Saved Tabs</h3>
       <ul class="tab-list">
         <li>

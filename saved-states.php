@@ -1,9 +1,11 @@
+<?php require 'database/db.php'; ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Saved Browser States</title>
+  <title>Saved States|Smart Browser State Manager</title>
 
   <!-- Shared Styles -->
   <link rel="stylesheet" href="css/base.css">
@@ -12,7 +14,6 @@
   <!-- Page Specific -->
   <link rel="stylesheet" href="css/pages/dashboard.css">
   <link rel="stylesheet" href="css/pages/saved-states.css">
-
 
 </head>
 <body>
@@ -29,81 +30,63 @@
       <div class="nav-item" onclick="goTo('dashboard.php')">Dashboard</div>
       <div class="nav-item active">Saved States</div>
       <div class="nav-item" onclick="goTo('settings.php')">Settings</div>
-      <div class="nav-item" onclick="goTo('landing.php')">Logout</div>⁡⁢⁣⁢<!--NOT SURE YET IF AADD-->⁡
+      <div class="nav-item" onclick="goTo('landing.php')">Logout</div>
     </aside>
 
     <!-- Main Content -->
-    <main class="main">
-
+<main class="main">
+  <div class="page-header">
+    <div>
       <h1 class="page-title">Saved Browser States</h1>
-
-    ⁡⁢⁣⁣  <!--Make THis fucntional-->⁡
-      <!-- Filter/Search -->
-      <form class="filter-bar">
-        <input type="text" placeholder="Search by device or date..." name="search"/>
-        <span class="user">Total States: 12</span>
-      </form> 
-
-   ⁡⁣⁣⁡⁢⁣⁣  <!--Make THis fucntional-->⁡
-      <!-- Saved State Item -->
-      <div class="state-card">
-        <div class="state-info">
-          <h4>Jan 20, 2026 – Laptop</h4>
-          <p>18 tabs • Chrome • Auto-saved</p>
-        </div>
-
-        <div class="state-actions">
-        <a href="#" class="view-link" onclick="openModal(); return false;">View</a>
-
-          <button class="danger">Delete</button>
-          <button class="primary restore">Restore</button> 
-        </div>
+      <p class="page-subtitle">Access and restore previously saved sessions.</p>
     </div>
-
-     <div class="state-card">
-        <div class="state-info">
-          <h4>Jan 20, 2026 – Laptop</h4>
-          <p>18 tabs • Chrome • Auto-saved</p>
-        </div>
-
-        <div class="state-actions">
-         <a href="#" class="view-link" onclick="openModal(); return false;">View</a>
-
-
-          <button class="danger">Delete</button>
-          <button class="primary restore">Restore</button>
-        </div>
-    </div>
-
-
-      <div class="state-card">
-        <div class="state-info">
-          <h4>Jan 20, 2026 – Laptop</h4>
-          <p>18 tabs • Chrome • Auto-saved</p>
-        </div>
-
-        <div class="state-actions">
-          <a href="#" class="view-link" onclick="openModal(); return false;">View</a>
-
-
-          <button class="danger">Delete</button>
-          <button class="primary restore">Restore</button>
-        </div>
-    </div>
-
-    </main>
+    <div class="state-count"><span>Total States</span><strong id="total-count">0</strong></div>
   </div>
 
+  <!-- Filter / Search -->
+  <form class="filter-bar" id="filter-form">
+  <div class="filter-left">
 
-  <?php include 'includes/modal.php'; ?>
-  <?php include 'includes/restore-confirmation.php'; ?>
-   <script src="script/modal.js"></script> 
-   <script src="script/nav.js" ></script>
+    <!-- Device Dropdown -->
+    <select name="device" id="device">
+      <option value="">All Devices</option>
+      <option>Laptop</option>
+      <option>Desktop</option>
+      <option>Work PC</option>
+      <option>Mobile</option>
+    </select>
 
-   
-   
-   
+    <!-- Browser Dropdown -->
+    <select name="browser" id="browser">
+      <option value="">All Browsers</option>
+      <option>Chrome</option>
+      <option>Firefox</option>
+      <option>Edge</option>
+      <option>Safari</option>
+    </select>
+
+    <!-- Date Picker -->
+    <input type="date" name="date" id="date" placeholder="Select Date">
+  </div>
+
   
+</form>
+
+  <!-- Saved States Container -->
+  <div id="states-container">
+    <!-- AJAX content loads here -->
+  </div>
+</main>
+
+</div>
+
+
+<?php include 'includes/modal.php'; ?>
+<?php include 'includes/restore-confirmation.php'; ?>
+<script src="script/modal.js"></script> 
+<script src="script/nav.js" ></script>
+<script src="script/saved-states.js" ></script>
+
 
 </body>
 </html>
