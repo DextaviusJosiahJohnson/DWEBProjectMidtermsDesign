@@ -1,24 +1,32 @@
 <?php
+session_start(); // 1. Start session to get the logged-in user
 require '../database/db.php'; 
+
+// 2. Security Check: Stop if not logged in
+if (!isset($_SESSION['user_id'])) {
+    die('<div class="empty-state"><h3>Please log in to view states.</h3></div>');
+}
+
+$user_id = $_SESSION['user_id'];
 
 // Get filters
 $device = $_GET['device'] ?? '';
 $browser = $_GET['browser'] ?? '';
 $date = $_GET['date'] ?? '';
 
-// Base query
-$sql = "SELECT * FROM browser_states WHERE 1=1";
-$params = [];
+// Base query - 3. Added user_id check
+$sql = "SELECT * FROM browser_states WHERE user_id = :uid";
+$params = [':uid' => $user_id];
 
-// Device filter
+// Device filter (Corrected column name: device_name -> device)
 if(!empty($device)){
-    $sql .= " AND device_name = :device";
+    $sql .= " AND device = :device";
     $params[':device'] = $device;
 }
 
-// Browser filter
+// Browser filter (Corrected column name: browser_name -> browser)
 if(!empty($browser)){
-    $sql .= " AND browser_name = :browser";
+    $sql .= " AND browser = :browser";
     $params[':browser'] = $browser;
 }
 
@@ -36,11 +44,22 @@ $states = $stmt->fetchAll();
 
 if(count($states) > 0){
     foreach($states as $state){
-        $badge = $state['save_type'] === 'Auto-saved' ? '<span class="badge auto">Auto-saved</span>' : '<span class="badge manual">Manual</span>';
+        // 4. Handle missing columns cleanly
+        // If 'save_type' isn't in DB yet, default to 'Manual'
+        $saveType = $state['save_type'] ?? 'Manual'; 
+        $badgeClass = ($saveType === 'Auto-saved') ? 'auto' : 'manual';
+        
+        // 5. Calculate tab count from the JSON data
+        $tabs = json_decode($state['tab_data'] ?? '[]', true);
+        $tabCount = is_array($tabs) ? count($tabs) : 0;
+
         echo '<div class="state-card">
                 <div class="state-left">
                   <div class="device-icon">';
-        switch(strtolower($state['device_name'])){ //turn into icon
+        
+        // Corrected column name access
+        $deviceVal = $state['device'] ?? 'Laptop';
+        switch(strtolower($deviceVal)){ 
             case 'laptop': echo '💻'; break;
             case 'desktop': echo '🖥️'; break;
             case 'work pc': echo '🖥️'; break;
@@ -51,14 +70,14 @@ if(count($states) > 0){
                   <div class="state-info">
                     <h4>'.date("M d, Y", strtotime($state['created_at'])).'</h4>
                     <div class="meta">
-                      <span>'.$state['tab_count'].' tabs</span>
-                      <span>'.$state['browser_name'].'</span>
-                      '.$badge.'
+                      <span>'.$tabCount.' tabs</span>
+                      <span>'.htmlspecialchars($state['browser'] ?? 'Unknown').'</span>
+                      <span class="badge '.$badgeClass.'">'.$saveType.'</span>
                     </div>
                   </div>
                 </div>
                 <div class="state-actions">  
-                  <a href="#" class="view-link" onclick="openModal(); return false;">View</a>
+                  <a href="#" class="view-link" onclick="openModal('.$state['id'].'); return false;">View</a>
                   <button class="danger">Delete</button>
                   <button class="primary restore">Restore</button>
                 </div>
@@ -67,3 +86,4 @@ if(count($states) > 0){
 } else {
     echo '<div class="empty-state"><h3>No saved states found</h3></div>';
 }
+?>
