@@ -1,10 +1,8 @@
 <?php
+  require_once 'database/db.php';
     session_start();
 
     $conn = new mysqli("localhost", "root", "", "smart_browser_state");
-    if ($conn->connect_error) {
-        die("Database connection failed");
-    }
 
     // REGISTER
     if (isset($_POST['register_email'])) {
