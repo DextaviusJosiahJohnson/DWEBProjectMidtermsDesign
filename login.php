@@ -1,62 +1,61 @@
 <?php
-  require_once 'database/db.php';
-    session_start();
+session_start();
+require_once 'database/db.php'; // Uses your central PDO connection
 
-    $conn = new mysqli("localhost", "root", "", "smart_browser_state");
+$message = "";
 
-    // REGISTER
-    if (isset($_POST['register_email'])) {
+// REGISTER
+if (isset($_POST['register_email'])) {
+    $fullname = trim($_POST['fullname']);
+    $email = trim($_POST['register_email']);
+    $password = $_POST['register_password'];
 
-        $fullname = $_POST['fullname'];
-        $email = $_POST['register_email'];
-        $password = password_hash($_POST['register_password'], PASSWORD_DEFAULT);
-
-        $stmt = $conn->prepare(
-            "INSERT INTO users (fullname, email, password) VALUES (?, ?, ?)"
-        );
-        $stmt->bind_param("sss", $fullname, $email, $password);
-
-        if ($stmt->execute()) {
-            $message = "Registration successful!";
+    // Check if email exists
+    $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ?");
+    $stmt->execute([$email]);
+    
+    if ($stmt->fetch()) {
+        $message = "Email already exists.";
+    } else {
+        $hashed = password_hash($password, PASSWORD_DEFAULT);
+        $stmt = $pdo->prepare("INSERT INTO users (fullname, email, password) VALUES (?, ?, ?)");
+        
+        if ($stmt->execute([$fullname, $email, $hashed])) {
+            $message = "Registration successful! Please login.";
         } else {
-            $message = "Email already exists.";
+            $message = "Error registering user.";
         }
     }
+}
 
-    // LOGIN
-    if (isset($_POST['login_email'])) {
+// LOGIN
+if (isset($_POST['login_email'])) {
+    $email = trim($_POST['login_email']);
+    $password = $_POST['login_password'];
 
-        $email = $_POST['login_email'];
-        $password = $_POST['login_password'];
+    $stmt = $pdo->prepare("SELECT id, fullname, password FROM users WHERE email = ?");
+    $stmt->execute([$email]);
+    $user = $stmt->fetch();
 
-        $stmt = $conn->prepare(
-            "SELECT id, fullname, password FROM users WHERE email = ?"
-        );
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
+    if ($user && password_verify($password, $user['password'])) {
+        // Save user session
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['fullname'] = $user['fullname'];
+        $_SESSION['email'] = $email;
 
-        $result = $stmt->get_result();
-        $user = $result->fetch_assoc();
-
-        if ($user && password_verify($password, $user['password'])) {
-
-            // Save user session
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['fullname'] = $user['fullname'];
-            $_SESSION['email'] = $email;
-
-            // Redirect to dashboard
-            header("Location: dashboard.php");
-            exit();
-
-        } else {
-            $message = "Invalid email or password.";
-        }
+        header("Location: dashboard.php");
+        exit();
+    } else {
+        $message = "Invalid email or password.";
     }
+}
 ?>
 
-
+<!DOCTYPE html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login</title>
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/pages/login.css">
@@ -69,19 +68,17 @@
       <p>Access your saved browser sessions</p>
     </div>
 
-    <?php if (isset($message)): ?>
-        <p style="color:#444; text-align:center; margin-bottom:10px;">
+    <?php if (!empty($message)): ?>
+        <p style="color:#d9534f; text-align:center; margin-bottom:15px; font-weight:500;">
             <?= htmlspecialchars($message) ?>
         </p>
     <?php endif; ?>
 
-    <!-- Tabs -->
     <div class="tabs">
       <div class="tab active" id="loginTab">Login</div>
       <div class="tab" id="registerTab">Register</div>
     </div>
 
-    <!-- Login Form -->
     <form id="loginForm" class="active" method="POST">
       <div class="form-group">
         <label>Email</label>
@@ -96,7 +93,6 @@
       <button class="btn">Login</button>
     </form>
 
-    <!-- Register Form -->
     <form id="registerForm" method="POST">
       <div class="form-group">
         <label>Full Name</label>

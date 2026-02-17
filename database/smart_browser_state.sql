@@ -52,6 +52,8 @@ CREATE TABLE IF NOT EXISTS `users` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+
+
 --
 -- Indexes for table `browser_states`
 --
@@ -63,7 +65,9 @@ ALTER TABLE `browser_states`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email` (`email`);
+  ADD UNIQUE KEY `email` (`email`),
+  ADD COLUMN IF NOT EXISTS api_key VARCHAR(64) DEFAULT NULL;
+ALTER TABLE users 
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -89,8 +93,7 @@ ALTER TABLE `users`
 ALTER TABLE `browser_states`
   ADD CONSTRAINT `browser_states_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE browser_states ADD COLUMN save_type VARCHAR(20) DEFAULT 'Manual';
-
+ALTER TABLE browser_states ADD COLUMN IF NOT EXISTS save_type VARCHAR(20) DEFAULT 'Manual';
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

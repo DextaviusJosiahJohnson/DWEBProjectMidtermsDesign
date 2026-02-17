@@ -30,7 +30,7 @@
       <div class="nav-item" onclick="goTo('dashboard.php')">Dashboard</div>
       <div class="nav-item active">Saved States</div>
       <div class="nav-item" onclick="goTo('settings.php')">Settings</div>
-      <div class="nav-item" onclick="goTo('landing.php')">Logout</div>
+      <div class="nav-item" onclick="window.location.href='logout.php'">Logout</div>
     </aside>
 
     <!-- Main Content -->

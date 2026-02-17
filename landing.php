@@ -13,6 +13,7 @@
         <button data-target="features">Features</button>
         <button data-target="how-it-works">How It Works</button>
         <button><a href="login.php">Login</a></button>
+        <button><a href="downloads/extension.zip" download>Download Extension Source</a></button>
     </nav>
 
   <div class="burger" onclick="toggleMenu()">
@@ -29,7 +30,7 @@
         Smart Browser State Manager runs in the background to capture your browser sessions,
         allowing you to restore your work anytime through a secure web dashboard.
     </p>
-     <button onclick="window.location.href='login.php'">Get Started</button>
+     <button><a href="login.php">Login</a></button>
    </section>
 
   <!-- FEATURES -->

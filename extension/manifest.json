@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "Surtr Session Saver",
+  "version": "2.1",
+  "description": "Instantly save your open tabs to your Surtr Dashboard.",
+  "permissions": [
+    "tabs",
+    "storage",
+    "alarms"
+  ],
+  "host_permissions": [
+    "http://localhost/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "48": "icon.png"
+    }
+  }
+}

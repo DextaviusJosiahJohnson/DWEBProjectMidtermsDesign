@@ -5,7 +5,6 @@ $user = 'root';
 $pass = '';
 $charset = 'utf8mb4';
 
-// 1. Try to connect normally
 $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
 $options = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
@@ -39,8 +38,6 @@ try {
             die("Auto-Install Failed: " . $e2->getMessage());
         }
     } else {
-        // If it's a different error (like wrong password), stop.
         throw new \PDOException($e->getMessage(), (int)$e->getCode());
     }
 }
-?>
