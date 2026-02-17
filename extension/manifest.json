@@ -1,12 +1,15 @@
 {
   "manifest_version": 3,
   "name": "Surtr Session Saver",
-  "version": "2.1",
-  "description": "Instantly save your open tabs to your Surtr Dashboard.",
+  "version": "2.2",
+  "description": "Save tabs, bookmarks, and history to your Surtr Dashboard.",
   "permissions": [
     "tabs",
     "storage",
-    "alarms"
+    "alarms",
+    "bookmarks",
+    "history",
+    "downloads"
   ],
   "host_permissions": [
     "http://localhost/*"
