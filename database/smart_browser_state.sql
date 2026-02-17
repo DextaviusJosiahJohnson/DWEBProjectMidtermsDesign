@@ -31,11 +31,12 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE IF NOT EXISTS `browser_states` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
   `state_name` varchar(255) DEFAULT 'Untitled Session',
   `device` varchar(50) DEFAULT NULL,
   `browser` varchar(50) DEFAULT NULL,
+  `save_type` varchar(50) DEFAULT 'Manual',
   `tab_data` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`tab_data`)),
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -45,10 +46,11 @@ CREATE TABLE IF NOT EXISTS `browser_states` (
 --
 
 CREATE TABLE IF NOT EXISTS `users` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
   `fullname` varchar(100) NOT NULL,
   `email` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
+  `api_key` VARCHAR(64) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -65,9 +67,7 @@ ALTER TABLE `browser_states`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email` (`email`),
-  ADD COLUMN IF NOT EXISTS api_key VARCHAR(64) DEFAULT NULL;
-ALTER TABLE users 
+  ADD UNIQUE KEY `email` (`email`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -92,8 +92,6 @@ ALTER TABLE `users`
 --
 ALTER TABLE `browser_states`
   ADD CONSTRAINT `browser_states_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
-
-ALTER TABLE browser_states ADD COLUMN IF NOT EXISTS save_type VARCHAR(20) DEFAULT 'Manual';
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
