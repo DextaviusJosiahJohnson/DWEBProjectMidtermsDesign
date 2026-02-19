@@ -40,7 +40,7 @@
       </ul>
 
       <div class="modal-actions">
-         <button  class="primary" id="restoreButton">Restore</button>
+        <button  class="primary" id="restoreButton">Restore</button>
         <button class="secondary" onclick="closeModal()">Close</button>
       </div>
     </div>

@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="css/pages/dashboard.css">
 </head>
 <body>
-
 <!--=============================================
             NAVIGATION (SIDEBAR)
 =================================================-->
@@ -25,7 +24,8 @@
       <div class="nav-item active" >Dashboard</div>
       <div class="nav-item" onclick="goTo('saved-states.php')">Saved States</div>
       <div class="nav-item" onclick="goTo('settings.php')">Settings</div>
-      <div class="nav-item" onclick="goTo('landing.php')">Logout</div>⁡⁢⁣⁢<!--NOT SURE YET IF AADD-->⁡
+      <div class="nav-item" onclick="goTo('landing.php')">Logout</div>
+     
     </aside>
 
  ⁡⁣⁣

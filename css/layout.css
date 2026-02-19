@@ -8,6 +8,7 @@
     position: sticky;
     top: 0;              /* required for sticky */
     height: 100vh;   
+    
 }
 
 .brand {
@@ -49,6 +50,12 @@
 .burger {
     font-size: 1.4rem;
     cursor: pointer;
+}
+
+.sidebar-footer {
+  margin-top: auto; /* Push to the bottom */
+  text-align: center;
+  padding: 10px;
 }
 
 @media (max-width: 768px) {

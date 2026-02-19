@@ -7,6 +7,38 @@
 .main {
     flex: 1;
     padding: 2rem;
+    position: relative;
+    overflow: hidden; 
+}
+
+/*Background Logo*/
+.main::before {
+content: "";
+position: absolute;
+
+top: -10vw;   
+right: -15vw;
+background-position: 80% -50px;
+
+width: 50vw;
+height: 50vw;
+max-width: 700px;
+max-height: 700px;
+
+background-image: url("../../img/bg-logo.png");
+background-repeat: no-repeat;
+background-size: contain;
+background-position: top right;
+
+opacity: 0.06;   
+filter: brightness(0.4); 
+pointer-events: none;
+z-index: 0;
+}
+
+.main > * {
+  position: relative;
+  z-index: 1;
 }
 
 .header {
@@ -85,7 +117,6 @@
     background: #ffffff;
     padding: 1.5rem;
     border-radius: 14px;
-    border: 1px solid #e5e7eb;
 }
 
 .card h2 {
@@ -102,7 +133,6 @@
 .table-container {
     background: #ffffff;
     border-radius: 14px;
-    border: 1px solid #e5e7eb;
     padding: 1.5rem;
 }
 
@@ -115,7 +145,7 @@ table {
 th, td {
     text-align: left;
     padding: 0.8rem;
-    border-bottom: 1px solid #f1f1f1;
+    border-bottom: 1px solid #d1cfcf;
 }
 
 th {
@@ -141,6 +171,10 @@ a{
 .view-btn:hover {
     background: #000;
     color: #fff;
+}
+
+.status-bar,.card,.table-container {
+    border: 1px solid #7a777767;
 }
 
 @media (max-width: 768px) {

@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // When clicking restore in details modal
-    if (restoreBtn ) {
+    if (restoreBtn) {
         restoreBtn.addEventListener('click', () => {
             closeModal();       // close details modal
             openConfirmModal(); // open confirmation modal

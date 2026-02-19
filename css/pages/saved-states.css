@@ -119,8 +119,8 @@
    State Card
 ---------------------------- */
 .state-card {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--card);
+  border: 1px solid #7a7777af;
   border-radius: 16px;
   padding: 1.2rem 1.4rem;
   display: flex;
