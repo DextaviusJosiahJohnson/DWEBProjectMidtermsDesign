@@ -1,0 +1,178 @@
+/* ===== Modal Overlay ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+/* ===== Modal Container ===== */
+.modal {
+  background: #fff;
+  padding: 1.5rem;
+  width: 90%;
+  max-width: 500px;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  overflow: hidden;   /* prevent modal scrolling */
+  max-height: none;
+}
+
+.small p{
+  margin-bottom: 1rem;
+}
+
+.modal h2 {
+  margin-bottom: 1rem;
+}
+
+.modal h3 {
+  margin-top: 0.8rem;
+}
+
+/* ===== Saved Tabs List ===== */
+.modal ul {
+  list-style: none; /* remove bullets */
+  margin: 1rem 0;
+  padding: 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  overflow: hidden;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+/* Each row */
+.modal ul li {
+  display: grid;
+  grid-template-columns: 1fr;
+  padding: 10px 12px;
+  font-size: 0.85rem;
+  border-bottom: 1px solid #e5e7eb;
+  word-break: break-all;
+}
+
+/* Remove last border */
+.modal ul li:last-child {
+  border-bottom: none;
+}
+
+/* Hover effect */
+.modal ul li:hover {
+  background: #f9fafb;
+}
+
+/* ===== Modal Actions / Buttons ===== */
+.modal-actions {
+  display: flex;
+  gap: 5px;
+  justify-content: flex-end;
+}
+
+.modal-actions button {
+  margin-left: 0.5rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 6px;
+  border: 1px solid black;
+  background: transparent;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.modal-actions button.primary {
+  background: black;
+  color: #fff;
+  
+}
+
+/* ===== Tablets ===== */
+@media (max-width: 768px) {
+  .modal {
+    width: 90%;
+    max-width: 100%;
+    margin: 0 10px;
+    padding: 1.25rem;
+  }
+
+  .modal h2 {
+    font-size: 1.1rem;
+  }
+
+  .modal h3 {
+    font-size: 0.95rem;
+  }
+
+  .modal ul li {
+    font-size: 0.8rem;
+    padding: 8px 10px;
+  }
+
+  .modal-actions {
+    justify-content: space-between;
+  }
+}
+
+/* ===== Mobile (Phones) ===== */
+@media (max-width: 480px) {
+  .modal-overlay {
+    padding: 12px;
+    align-items: flex-end;
+  }
+
+  .modal {
+    width: 100%;
+    max-width: 100%;
+    padding: 1rem;
+    border-radius: 12px 12px 0 0;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.25s ease;
+  }
+
+  /* Titles scale down */
+  .modal h2 {
+    font-size: 1.05rem;
+  }
+
+  .modal h3 {
+    font-size: 0.9rem;
+  }
+
+  /* List items */
+  .modal ul li {
+    font-size: 0.78rem;
+    padding: 8px 10px;
+  }
+
+  /* Buttons: full width, easy to tap */
+  .modal-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .modal-actions button {
+    width: 100%;
+    margin-left: 0;
+    padding: 0.6rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* ===== Animation ===== */
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
