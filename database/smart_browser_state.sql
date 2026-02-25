@@ -51,13 +51,6 @@ CREATE TABLE bookmarks (
     created_at DATETIME
 );
 
--- Table structure SEARCH HISTORY --
-CREATE TABLE search_history (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    query VARCHAR(255),
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
 -- ---------------------------------------------------------------------------------------
 --
 -- Table structure for table `users`
