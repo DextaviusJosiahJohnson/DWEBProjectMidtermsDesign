@@ -1,7 +1,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">  
-<title>Dashboard|Smart Browser State Manager </title>
+  <title>Dashboard|Smart Browser State Manager </title>
+
   <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/pages/dashboard.css">
@@ -17,15 +18,15 @@
   </div>
 
   <div class="layout"> <!--Page container --->
-
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
       <div class="brand">Smart Browser State</div>
       <div class="nav-item active" >Dashboard</div>
       <div class="nav-item" onclick="goTo('saved-states.php')">Saved States</div>
+      <div class="nav-item" onclick="goTo('bookmarks.php')">Bookmarks</div>
+      <div class="nav-item "onclick="goTo('search-history.php')">Search History</div>
       <div class="nav-item" onclick="goTo('settings.php')">Settings</div>
       <div class="nav-item" onclick="goTo('landing.php')">Logout</div>
-     
     </aside>
 
  ⁡⁣⁣

@@ -8,12 +8,10 @@
   <!-- Shared Styles -->
   <link rel="stylesheet" href="css/base.css" />
   <link rel="stylesheet" href="css/layout.css" />
-  <link rel="stylesheet" href="css/modal.css" />
-
+  
   <!-- Page Specific -->
   <link rel="stylesheet" href="css/pages/settings.css" />
-  <link rel="stylesheet" href="css/pages/dashboard.css">
-  
+   
 </head>
 <body>
 

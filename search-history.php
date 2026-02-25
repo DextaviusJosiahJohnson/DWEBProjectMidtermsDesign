@@ -9,8 +9,12 @@
 
   <!-- Shared Styles -->
   <link rel="stylesheet" href="css/base.css">
-  <link rel="stylesheet" href="css/layout.css">  
+  <link rel="stylesheet" href="css/layout.css">
+
+  <!-- Page Specific -->
+  <link rel="stylesheet" href="css/pages/dashboard.css">
   <link rel="stylesheet" href="css/pages/saved-states.css">
+
 </head>
 <body>
 
@@ -24,9 +28,9 @@
     <aside class="sidebar" id="sidebar">
       <div class="brand">Smart Browser State</div>
       <div class="nav-item" onclick="goTo('dashboard.php')">Dashboard</div>
-      <div class="nav-item active">Saved States</div>
+      <div class="nav-item "onclick="goTo('dashboard.php')">Saved States</div>
       <div class="nav-item" onclick="goTo('bookmarks.php')">Bookmarks</div>
-      <div class="nav-item "onclick="goTo('search-history.php')">Search History</div>
+      <div class="nav-item active">Search History</div>
       <div class="nav-item" onclick="goTo('settings.php')">Settings</div>
       <div class="nav-item" onclick="goTo('landing.php')">Logout</div>
     </aside>
@@ -35,9 +39,9 @@
 <main class="main">
   <div class="page-header">
     <div>
-      <h1 class="page-title">Saved Data</h1>
+      <h1 class="page-title">Searh History</h1>
       <p class="page-subtitle">
-        Manage your saved sessions, bookmarks, and search history.
+       View all your search history here.
       </p>
     </div>
 
@@ -45,35 +49,8 @@
   </div>
 
 ⁡⁢⁣⁣
-
   <!-- Filter Section -->
-  <form class="filter-bar" id="filter-form">
-  <div class="filter-left" id="filter-section">
-  
-    <!-- Device Dropdown -->
-    <select name="device" id="device">
-      <option value="">All Devices</option>
-      <option>Laptop</option>
-      <option>Desktop</option>
-      <option>Work PC</option>
-      <option>Mobile</option>
-    </select>
-
-    <!-- Browser Dropdown -->
-    <select name="browser" id="browser">
-      <option value="">All Browsers</option>
-      <option>Chrome</option>
-      <option>Firefox</option>
-      <option>Edge</option>
-      <option>Safari</option>
-    </select>
-
-    <!-- Date Picker -->
-    <input type="date" name="date" id="date" placeholder="Select Date">
-  </div>
-
-  
-</form>
+    
 
   <!-- Saved States Container -->
    <div id="states-container" >
@@ -88,7 +65,7 @@
 <?php include 'includes/restore-confirmation.php'; ?>
 <script src="script/modal.js"></script> 
 <script src="script/nav.js" ></script>
-<script src="script/saved-states.js" ></script>
+
 
 </body>
 </html>

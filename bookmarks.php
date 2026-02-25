@@ -5,12 +5,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Saved States|Smart Browser State Manager</title>
+  <title>Bookmarks|Smart Browser State Manager</title>
 
   <!-- Shared Styles -->
   <link rel="stylesheet" href="css/base.css">
-  <link rel="stylesheet" href="css/layout.css">  
-  <link rel="stylesheet" href="css/pages/saved-states.css">
+  <link rel="stylesheet" href="css/layout.css">
+
+  <!-- Page Specific -->
+  <link rel="stylesheet" href="css/pages/bookmarks.css">
+
 </head>
 <body>
 
@@ -24,8 +27,8 @@
     <aside class="sidebar" id="sidebar">
       <div class="brand">Smart Browser State</div>
       <div class="nav-item" onclick="goTo('dashboard.php')">Dashboard</div>
-      <div class="nav-item active">Saved States</div>
-      <div class="nav-item" onclick="goTo('bookmarks.php')">Bookmarks</div>
+      <div class="nav-item "onclick="goTo('saved-states.php')">Saved States</div>
+      <div class="nav-item active">Bookmarks</div>
       <div class="nav-item "onclick="goTo('search-history.php')">Search History</div>
       <div class="nav-item" onclick="goTo('settings.php')">Settings</div>
       <div class="nav-item" onclick="goTo('landing.php')">Logout</div>
@@ -33,11 +36,12 @@
 
     <!-- Main Content -->
 <main class="main">
+  
   <div class="page-header">
     <div>
-      <h1 class="page-title">Saved Data</h1>
+      <h1 class="page-title">Bookmarks</h1>
       <p class="page-subtitle">
-        Manage your saved sessions, bookmarks, and search history.
+          View and manage all your saved bookmarks in one place.
       </p>
     </div>
 
@@ -45,34 +49,12 @@
   </div>
 
 ⁡⁢⁣⁣
-
-  <!-- Filter Section -->
-  <form class="filter-bar" id="filter-form">
-  <div class="filter-left" id="filter-section">
-  
-    <!-- Device Dropdown -->
-    <select name="device" id="device">
-      <option value="">All Devices</option>
-      <option>Laptop</option>
-      <option>Desktop</option>
-      <option>Work PC</option>
-      <option>Mobile</option>
-    </select>
-
-    <!-- Browser Dropdown -->
-    <select name="browser" id="browser">
-      <option value="">All Browsers</option>
-      <option>Chrome</option>
-      <option>Firefox</option>
-      <option>Edge</option>
-      <option>Safari</option>
-    </select>
-
-    <!-- Date Picker -->
-    <input type="date" name="date" id="date" placeholder="Select Date">
+<!-- Filter Section -->
+<form class="filter-bar" id="filter-form" onsubmit="return false;">
+  <div class="filter-left">
+    <input type="text" id="bookmark-search" name="search" placeholder="Search bookmarks..."/> 
   </div>
-
-  
+  <button type="submit" class="search-btn">Search</button>
 </form>
 
   <!-- Saved States Container -->
@@ -88,7 +70,7 @@
 <?php include 'includes/restore-confirmation.php'; ?>
 <script src="script/modal.js"></script> 
 <script src="script/nav.js" ></script>
-<script src="script/saved-states.js" ></script>
+<script src="script/bookmarks.js" ></script>
 
 </body>
 </html>
