@@ -12,10 +12,9 @@
   <link rel="stylesheet" href="css/layout.css">
 
   <!-- Page Specific -->
-  <link rel="stylesheet" href="css/pages/dashboard.css">
-  <link rel="stylesheet" href="css/pages/saved-states.css">
-
+  <link rel="stylesheet" href="css/pages/bookmarks.css">
 </head>
+
 <body>
 
   <!-- Mobile Top Bar -->
@@ -35,13 +34,14 @@
       <div class="nav-item" onclick="goTo('landing.php')">Logout</div>
     </aside>
 
-    <!-- Main Content -->
+<!-- Main Content -->
 <main class="main">
+  
   <div class="page-header">
     <div>
-      <h1 class="page-title">Searh History</h1>
+      <h1 class="page-title">Bookmarks</h1>
       <p class="page-subtitle">
-       View all your search history here.
+          View and manage all your saved bookmarks in one place.
       </p>
     </div>
 
@@ -49,8 +49,13 @@
   </div>
 
 ⁡⁢⁣⁣
-  <!-- Filter Section -->
-    
+<!-- Filter Section -->
+<form class="filter-bar" id="filter-form" onsubmit="return false;">
+  <div class="filter-left">
+    <input type="text" id="history-search" name="search" placeholder="Search by keywords..."/> 
+  </div>
+  <button type="submit" class="search-btn">Search</button>
+</form>
 
   <!-- Saved States Container -->
    <div id="states-container" >
@@ -65,6 +70,9 @@
 <?php include 'includes/restore-confirmation.php'; ?>
 <script src="script/modal.js"></script> 
 <script src="script/nav.js" ></script>
+<script src="script/search-history.js" ></script>
+
+</div>
 
 
 </body>
