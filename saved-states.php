@@ -37,7 +37,7 @@
     <div>
       <h1 class="page-title">Saved Data</h1>
       <p class="page-subtitle">
-        Manage your saved sessions, bookmarks, and search history.
+       Access and restore previously saved sessions.
       </p>
     </div>
 
@@ -92,3 +92,4 @@
 
 </body>
 </html>
+
