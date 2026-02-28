@@ -5,7 +5,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Saved States|Smart Browser State Manager</title>
+  <title>Search History|Smart Browser State Manager</title>
 
   <!-- Shared Styles -->
   <link rel="stylesheet" href="css/base.css">
@@ -77,5 +77,6 @@
 
 </body>
 </html>
+
 
 
