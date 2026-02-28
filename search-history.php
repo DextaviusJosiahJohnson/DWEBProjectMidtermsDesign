@@ -39,7 +39,7 @@
   
   <div class="page-header">
     <div>
-      <h1 class="page-title">Bookmarks</h1>
+      <h1 class="page-title">Search History</h1>
       <p class="page-subtitle">
          View all your search history here.
       </p>
@@ -77,4 +77,5 @@
 
 </body>
 </html>
+
 
