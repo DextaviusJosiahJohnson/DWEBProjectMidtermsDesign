@@ -41,7 +41,7 @@
     <div>
       <h1 class="page-title">Bookmarks</h1>
       <p class="page-subtitle">
-          View and manage all your saved bookmarks in one place.
+         View all your search history here.
       </p>
     </div>
 
@@ -77,3 +77,4 @@
 
 </body>
 </html>
+
