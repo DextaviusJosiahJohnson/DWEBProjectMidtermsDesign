@@ -54,7 +54,31 @@ CREATE TABLE IF NOT EXISTS `users` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Table structure for table `bookmarks`
+--
+CREATE TABLE bookmarks (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT,
+    title VARCHAR(255),
+    url TEXT,
+    device VARCHAR(100),
+    browser VARCHAR(100),
+    created_at DATETIME
+);
 
+--
+-- Table structure for table `search-history`
+--
+CREATE TABLE search_history (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    search_query VARCHAR(255) NOT NULL,
+    search_engine VARCHAR(50) NOT NULL,
+    browser VARCHAR(50) NOT NULL,
+    device VARCHAR(50) NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
 
 --
 -- Indexes for table `browser_states`
