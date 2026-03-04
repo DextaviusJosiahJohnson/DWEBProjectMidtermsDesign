@@ -11,7 +11,6 @@
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/pages/saved-states.css">
-
 </head>
 <body>
 
@@ -67,8 +66,6 @@
     <!-- Date Picker -->
     <input type="date" name="date" id="date" placeholder="Select Date">
   </div>
-
-  
 </form>
 
   <!-- Saved States Container -->
@@ -76,16 +73,13 @@
     <!-- AJAX content loads here -->
   </div>
 </main>
-
 </div>
-
 
 <?php include 'includes/modal.php'; ?>
 <?php include 'includes/restore-confirmation.php'; ?>
 <script src="script/modal.js"></script> 
 <script src="script/nav.js" ></script>
 <script src="script/saved-states.js" ></script>
-
-
 </body>
 </html>
+
