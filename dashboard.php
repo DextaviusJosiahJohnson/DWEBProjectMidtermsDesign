@@ -37,7 +37,6 @@ $recent_states = $stmt->fetchAll();
   <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/pages/dashboard.css">
-
 </head>
 <body>
 
@@ -134,9 +133,9 @@ $recent_states = $stmt->fetchAll();
        // This allows our modal.js to talk to the backend
        const API_BASE_URL = 'ajax/';
    </script>
-
    <script src="script/modal.js"></script>
    <script src="script/nav.js" ></script>
 
 </body>
+
 </html>
