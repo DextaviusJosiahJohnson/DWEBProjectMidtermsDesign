@@ -7,7 +7,6 @@ if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
-
 $user_id = $_SESSION['user_id'];
 
 // 2. Fetch User Data
@@ -32,11 +31,10 @@ $apiKey = $user['api_key'] ?? '';
   <link rel="stylesheet" href="css/base.css" />
   <link rel="stylesheet" href="css/layout.css" />
   <!-- Page Specific -->
-  <link rel="stylesheet" href="css/pages/settings.css" />
-   
+  <link rel="stylesheet" href="css/pages/settings.css" /> 
 </head>
-<body>
 
+<body>
   <div class="mobile-top">
     <div class="burger" onclick="toggleMenu()">☰</div>
   </div>
@@ -124,4 +122,5 @@ $apiKey = $user['api_key'] ?? '';
   <script src="script/modal.js"></script> 
 
 </body>
+
 </html>
