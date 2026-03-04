@@ -22,17 +22,18 @@ $apiKey = $user['api_key'] ?? '';
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Settings | Smart Browser State Manager</title>
 
+  <!-- Shared Styles -->
   <link rel="stylesheet" href="css/base.css" />
   <link rel="stylesheet" href="css/layout.css" />
-  <link rel="stylesheet" href="css/pages/modal.css" />
-
+  <!-- Page Specific -->
   <link rel="stylesheet" href="css/pages/settings.css" />
-  <link rel="stylesheet" href="css/pages/dashboard.css">
+   
 </head>
 <body>
 
@@ -43,10 +44,11 @@ $apiKey = $user['api_key'] ?? '';
   <div class="layout">
     <aside class="sidebar" id="sidebar">
       <div class="brand">Smart Browser State</div>
-      <div class="nav-item" onclick="goTo('dashboard.php')">Dashboard</div>
-      <div class="nav-item" onclick="goTo('saved-states.php')">Saved States</div>
-      <div class="nav-item active">Settings</div>
-      <div class="nav-item" onclick="window.location.href='logout.php'">Logout</div> 
+      <div class="nav-item"  onclick="goTo('dashboard.php')" >Dashboard</div>
+      <div class="nav-item" onclick="goTo('bookmarks.php')">Bookmarks</div>
+      <div class="nav-item "onclick="goTo('search-history.php')">Search History</div>
+      <div class="nav-item active" onclick="goTo('settings.php')">Settings</div>
+      <div class="nav-item " onclick="goTo('landing.php')">Logout</div>
     </aside>
 
     <main class="main">
