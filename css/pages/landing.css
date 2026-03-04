@@ -1,20 +1,33 @@
 
 /* NAVIGATION */
 header {
-    background: var(--card);
+    background: var(--bg-navigation);
     border-bottom: 1px solid #e5e7eb;
-    padding: 16px 24px;
+    padding: 5px 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     position: sticky;
     top: 0;
     z-index: 100;
+    color: white;
 }
 
 .logo {
-    font-weight: 600;
-    font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  
+}
+
+.logo-img {
+ height: 60px;
+  width: auto;
+  display: block;
+  transform: translateY(5px);
 }
 
 nav {
@@ -56,7 +69,7 @@ nav button:hover {
 .burger span {
     width: 22px;
     height: 2px;
-    background: var(--primary);
+    background: white;
 }
 
 /* HERO */
@@ -82,7 +95,7 @@ nav button:hover {
 
 .hero button {
     padding: 12px 28px;
-    background: var(--accent);
+    background: var(--bg-navigation);
     color: #fff;
     border: none;
     border-radius: 8px;
@@ -115,9 +128,9 @@ nav button:hover {
 
 .feature-card {
     background: var(--card);
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 24px;
+    border: 1px solid #7a7777af;
+    border-radius: 8px;
+    padding: 27px;
 }
 
 .feature-card h3 {
@@ -152,26 +165,68 @@ nav button:hover {
 }
 
 .step {
-    padding: 24px;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
     background: var(--bg);
     text-align: center;
     font-size: 14px;
+    border: 1px solid #7a7777af;
+    border-radius: 8px;
+    padding: 27px;
 }
 
 .step strong {
     display: block;
-    font-size: 24px;
+    font-size: 25px;
     margin-bottom: 8px;
-    color: var(--accent);
+    color: var(--bg-navigation);
+}
+/*Footer*/
+.footer {
+  background-color: var(--bg-navigation);
+  color: #fff;
+  padding: 40px 20px;
+  margin-top: 10px;
 }
 
-footer {
-    text-align: center;
-    padding: 24px;
-    font-size: 12px;
-    color: var(--muted);
+.footer-container {
+  max-width: 1200px;
+  margin: auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.footer h3,
+.footer h4 {
+  margin-bottom: 15px;
+}
+
+.footer p {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.footer-links ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-links ul li {
+  margin-bottom: 2px;
+}
+
+.footer-links ul li a {
+  text-decoration: none;
+  color: #fffefe;
+  transition: 0.3s;
+}
+
+.footer-links ul li a:hover {
+  color: #b8b4b4;
+}
+
+.footer-contact p {
+  margin-bottom: 8px;
 }
 
 /* MOBILE NAV */
@@ -180,19 +235,31 @@ footer {
     position: absolute;
     top: 64px;
     right: 0;
-    background: var(--card);
+    background: var(--bg-navigation);
     flex-direction: column;
     width: 200px;
     padding: 16px;
     border: 1px solid #e5e7eb;
     display: none;
+    border-radius: 10px;
     }
 
     nav.active {
     display: flex;
     }
 
+    .logo, .hero button{
+        font-size:13px ;
+    }
+    .hero h1{
+        font-size:25px ;
+    }
     .burger {
     display: flex;
     }
+    .footer-container {
+    flex-direction: column;
+  }
+
+   
 }

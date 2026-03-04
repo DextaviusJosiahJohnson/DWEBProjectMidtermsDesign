@@ -80,15 +80,16 @@
   margin-left: 0.5rem;
   padding: 0.4rem 0.9rem;
   border-radius: 6px;
-  border: 1px solid #000;
+  border: 1px solid black;
   background: transparent;
   font-size: 0.75rem;
   cursor: pointer;
 }
 
 .modal-actions button.primary {
-  background: #000;
+  background: black;
   color: #fff;
+  
 }
 
 /* ===== Tablets ===== */

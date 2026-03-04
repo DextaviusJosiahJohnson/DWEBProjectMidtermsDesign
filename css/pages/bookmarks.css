@@ -1,0 +1,43 @@
+
+
+/* Search input slightly wider */
+.filter-bar input[type="text"] {
+  min-width: 220px;
+}
+
+.search-wrapper {
+    position: relative;
+    width: 300px;
+}
+
+#bookmark-search {
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+}
+
+
+/* Mobile Search Button */
+.search-btn {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 5px 10px;
+    font-size: 12px;
+    border: none;
+    background: #000000;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    display: none; 
+}
+
+@media (max-width: 768px) {
+    .search-wrapper {
+        width: 100%;
+    }
+    .search-btn {
+        display: block;
+    }
+}
