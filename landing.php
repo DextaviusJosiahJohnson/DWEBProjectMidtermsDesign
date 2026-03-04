@@ -13,7 +13,7 @@
   <img src="img/logo.png" alt="Logo" class="logo-img">
   <span>Smart Browser State Manager</span>
 </div>
-
+   
     <nav class="nav-links" id="navLinks">
         <button data-target="home">Home</button>
         <button data-target="features">Features</button>
@@ -84,7 +84,6 @@
 <!--Footer-->
 <footer class="footer">
   <div class="footer-container">
-    
     <div class="footer-brand">
       <h3>Smart Browser State Manager</h3>
       <p>Automatically save and restore your browser sessions securely from anywhere.</p>
@@ -108,7 +107,6 @@
 
   </div>
 </footer>
-
 
 <script>
   function toggleMenu() {
