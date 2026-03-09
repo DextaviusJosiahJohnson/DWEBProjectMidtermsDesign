@@ -179,6 +179,18 @@ nav button:hover {
     margin-bottom: 8px;
     color: var(--bg-navigation);
 }
+
+.download-icon-link {
+  display: inline-block;
+  color: var(--bg-navigation);
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.download-icon-link:hover {
+  opacity: 0.7;
+  transform: translateY(1px);
+}
+
 /*Footer*/
 .footer {
   background-color: var(--bg-navigation);
@@ -262,4 +274,5 @@ nav button:hover {
   }
 
    
+
 }
