@@ -15,23 +15,23 @@ $options = [
 try {
     $pdo = new PDO($dsn, $user, $pass, $options);
 } catch (\PDOException $e) {
-    // 2. Catch "Unknown Database" error (Code 1049)
+    // Catch "Unknown Database" error (Code 1049)
     if ($e->getCode() == 1049) {
         try {
             // Connect without selecting a DB to create it
             $pdo = new PDO("mysql:host=$host;charset=$charset", $user, $pass, $options);
             
-            // 3. Locate and Read the SQL file
+            // Locate and Read the new 3NF SQL file
             $sqlFile = __DIR__ . '/smart_browser_state.sql';
             if (!file_exists($sqlFile)) {
                 die("Installation Error: SQL file not found at $sqlFile");
             }
             $sql = file_get_contents($sqlFile);
 
-            // 4. Run the SQL to create DB and Tables
+            // Run the SQL to create DB and Tables
             $pdo->exec($sql);
             
-            // 5. Reconnect to the new specific database
+            // Reconnect to the new specific database
             $pdo = new PDO($dsn, $user, $pass, $options);
             
         } catch (\PDOException $e2) {
@@ -41,3 +41,4 @@ try {
         throw new \PDOException($e->getMessage(), (int)$e->getCode());
     }
 }
+?>

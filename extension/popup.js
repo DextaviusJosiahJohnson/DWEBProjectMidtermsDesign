@@ -1,24 +1,48 @@
-import BrowserDataExporter from './export.js';
-
-// CONFIGURATION
 const API_URL = 'http://localhost/Surtr/api/save_state.php'; 
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Elements
     const saveBtn = document.getElementById('saveBtn');
     const apiKeyInput = document.getElementById('apiKey');
+    const intervalSelect = document.getElementById('autoSaveInterval');
     const statusDiv = document.getElementById('status');
     
-    const btnBookmarks = document.getElementById('exportBookmarksBtn');
-    const btnHistoryJson = document.getElementById('exportHistoryJsonBtn');
-    const btnHistoryCsv = document.getElementById('exportHistoryCsvBtn');
-
-    // 1. Load saved API Key
-    chrome.storage.local.get(['surtr_api_key'], (result) => {
-        if (result.surtr_api_key) apiKeyInput.value = result.surtr_api_key;
+    // 1. Populate Autosave Intervals
+    for (let i = 1; i <= 60; i++) {
+        let opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = `Every ${i} minute${i > 1 ? 's' : ''}`;
+        intervalSelect.appendChild(opt);
+    }
+    const longIntervals = [
+        { val: 1440, text: 'Every 24 hours' },
+        { val: 4320, text: 'Every 3 days' },
+        { val: 10080, text: 'Every 1 week' }
+    ];
+    longIntervals.forEach(inv => {
+        let opt = document.createElement('option');
+        opt.value = inv.val;
+        opt.textContent = inv.text;
+        intervalSelect.appendChild(opt);
     });
 
-    // Helper: Show Status
+    // 2. Load Saved Settings
+    chrome.storage.local.get(['surtr_api_key', 'surtr_interval'], (result) => {
+        if (result.surtr_api_key) apiKeyInput.value = result.surtr_api_key;
+        if (result.surtr_interval !== undefined) intervalSelect.value = result.surtr_interval;
+    });
+
+    // 3. Handle Interval Changes
+    intervalSelect.addEventListener('change', () => {
+        const val = parseInt(intervalSelect.value);
+        chrome.storage.local.set({ surtr_interval: val });
+        
+        chrome.alarms.clear('surtr_auto_save');
+        if (val > 0) {
+            chrome.alarms.create('surtr_auto_save', { periodInMinutes: val });
+        }
+        showStatus(`Autosave set to ${intervalSelect.options[intervalSelect.selectedIndex].text}`, "success");
+    });
+
     function showStatus(msg, type) {
         statusDiv.textContent = msg;
         statusDiv.className = type;
@@ -26,7 +50,6 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => { statusDiv.style.display = 'none'; }, 3000);
     }
     
-    // Helper: Browser Detection
     function getBrowserName() {
         const agent = navigator.userAgent;
         if (agent.includes("Edg")) return "Edge";
@@ -36,7 +59,28 @@ document.addEventListener('DOMContentLoaded', () => {
         return "Other";
     }
 
-    // --- MAIN SAVE FUNCTION ---
+    // Helper: Flatten Bookmarks
+    async function getBookmarksData() {
+        const tree = await chrome.bookmarks.getTree();
+        const bookmarks = [];
+        function processNode(nodes) {
+            for (const node of nodes) {
+                if (node.url) bookmarks.push({ title: node.title, url: node.url });
+                if (node.children) processNode(node.children);
+            }
+        }
+        processNode(tree);
+        return bookmarks;
+    }
+
+    // Helper: Get Recent History
+    async function getHistoryData() {
+        const oneDayAgo = (new Date).getTime() - (1000 * 60 * 60 * 24);
+        const historyItems = await chrome.history.search({ text: '', startTime: oneDayAgo, maxResults: 1000 });
+        return historyItems.map(item => ({ title: item.title, url: item.url }));
+    }
+
+    // 4. MAIN SAVE LOGIC
     saveBtn.addEventListener('click', async () => {
         const apiKey = apiKeyInput.value.trim();
         if (!apiKey) {
@@ -50,11 +94,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             const tabs = await chrome.tabs.query({ currentWindow: true });
-            const tabData = tabs.map(t => ({
-                title: t.title,
-                url: t.url,
-                favIconUrl: t.favIconUrl
-            }));
+            const tabData = tabs.map(t => ({ title: t.title, url: t.url }));
+            const bookmarkData = await getBookmarksData();
+            const historyData = await getHistoryData();
 
             const response = await fetch(API_URL, {
                 method: 'POST',
@@ -63,7 +105,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     apiKey: apiKey,
                     device: 'Extension', 
                     browser: getBrowserName(),
-                    tabs: tabData
+                    save_type: 'Manual',
+                    tabs: tabData,
+                    bookmarks: bookmarkData,
+                    history: historyData
                 })
             });
 
@@ -80,22 +125,5 @@ document.addEventListener('DOMContentLoaded', () => {
             saveBtn.disabled = false;
             saveBtn.textContent = "Save Current Session";
         }
-    });
-
-    // --- EXPORT HANDLERS ---
-    
-    btnBookmarks.addEventListener('click', async () => {
-        await BrowserDataExporter.exportBookmarks();
-        showStatus("Bookmarks exported!", "success");
-    });
-
-    btnHistoryJson.addEventListener('click', async () => {
-        await BrowserDataExporter.exportHistoryJSON();
-        showStatus("History (JSON) exported!", "success");
-    });
-
-    btnHistoryCsv.addEventListener('click', async () => {
-        await BrowserDataExporter.exportHistoryCSV();
-        showStatus("History (CSV) exported!", "success");
     });
 });

@@ -11,19 +11,23 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 $user_name = $_SESSION['fullname'];
 
-// 2. Fetch Stats
 // A. Total Saved Sessions
 $stmt = $pdo->prepare("SELECT COUNT(*) FROM browser_states WHERE user_id = ?");
 $stmt->execute([$user_id]);
 $total_sessions = $stmt->fetchColumn();
 
-// B. Active Devices (Unique device names)
-$stmt = $pdo->prepare("SELECT COUNT(DISTINCT device) FROM browser_states WHERE user_id = ?");
+// B. Active Devices (Count unique device IDs instead of text)
+$stmt = $pdo->prepare("SELECT COUNT(DISTINCT device_id) FROM browser_states WHERE user_id = ?");
 $stmt->execute([$user_id]);
 $active_devices = $stmt->fetchColumn();
 
-// C. Recent States (Get top 3)
-$stmt = $pdo->prepare("SELECT * FROM browser_states WHERE user_id = ? ORDER BY created_at DESC LIMIT 3");
+// C. Recent States (Get top 3 with JOINs)
+$stmt = $pdo->prepare("SELECT bs.*, d.device_name AS device,
+        (SELECT COUNT(*) FROM tabs t WHERE t.state_id = bs.id) AS tab_count
+        FROM browser_states bs
+        LEFT JOIN devices d ON bs.device_id = d.id
+        WHERE bs.user_id = ? 
+        ORDER BY bs.created_at DESC LIMIT 3");
 $stmt->execute([$user_id]);
 $recent_states = $stmt->fetchAll();
 ?>
@@ -105,8 +109,7 @@ $recent_states = $stmt->fetchAll();
           </thead>
           <tbody>
             <?php foreach ($recent_states as $state): 
-                $tabs = json_decode($state['tab_data'] ?? '[]', true);
-                $count = is_array($tabs) ? count($tabs) : 0;
+                $count = $state['tab_count'];
             ?>
             <tr>
               <td><?= date("M d, Y", strtotime($state['created_at'])) ?></td>
