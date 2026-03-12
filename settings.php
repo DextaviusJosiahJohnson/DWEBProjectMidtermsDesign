@@ -43,6 +43,7 @@ $apiKey = $user['api_key'] ?? '';
     <aside class="sidebar" id="sidebar">
       <div class="brand">Smart Browser State</div>
       <div class="nav-item"  onclick="goTo('dashboard.php')" >Dashboard</div>
+      <div class="nav-item"  onclick="goTo('saved-states.php')" >Saved States</div>
       <div class="nav-item" onclick="goTo('bookmarks.php')">Bookmarks</div>
       <div class="nav-item "onclick="goTo('search-history.php')">Search History</div>
       <div class="nav-item active" onclick="goTo('settings.php')">Settings</div>
@@ -124,3 +125,4 @@ $apiKey = $user['api_key'] ?? '';
 </body>
 
 </html>
+
