@@ -2,7 +2,7 @@
 
 complete 4-phase security and structural overhaul
 
-PHASE 1 — Critical Security
+# PHASE 1 — Critical Security
 - Add session_regenerate_id(true) on login to prevent session fixation
 - Add session_start() + auth guards to bookmarks.php, saved-states.php,
   and search-history.php (previously unprotected page shells)
@@ -18,7 +18,7 @@ PHASE 1 — Critical Security
   to dashboard.php)
 - Remove stray duplicate closing div in search-history.php
 
-PHASE 2 — Structural and Logic Bugs
+# PHASE 2 — Structural and Logic Bugs
 - Fix background.js service worker navigator.userAgent crash — MV3
   service workers have no navigator access. Browser name is now detected
   in popup.js (which runs in a normal window context) and stored in
@@ -32,7 +32,7 @@ PHASE 2 — Structural and Logic Bugs
 - Add data-id attribute to Restore button in fetch-states.php output
   so the JS listener can read it
 
-PHASE 3 — API and Data Layer
+# PHASE 3 — API and Data Layer
 - Hash API keys at rest using SHA-256 — generate_api_key.php now stores
   hash('sha256', $rawKey) and returns the raw key once to the user.
   save_state.php hashes the incoming key before DB lookup. Raw keys are
@@ -57,7 +57,7 @@ PHASE 3 — API and Data Layer
 - Add pagination styles to layout.css (.pagination, .page-btn,
   .page-info) with responsive handling
 
-PHASE 4 — Hardening and Production Readiness
+# PHASE 4 — Hardening and Production Readiness
 - Add config.php — single source of truth for DB credentials,
   ALLOWED_ORIGIN, APP_ENV, session lifetime, cookie flags. Inline
   credential strings removed from all files.
