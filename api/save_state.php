@@ -1,11 +1,31 @@
 <?php
-header('Content-Type: application/json');
-header("Access-Control-Allow-Origin: *"); 
+require_once __DIR__ . '/../database/db.php';
+// db.php requires config.php — ALLOWED_ORIGIN is now available
+
+// ── CORS ──────────────────────────────────────────────────
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+$allowedOrigin = (strpos($origin, 'chrome-extension://') === 0 || $origin === ALLOWED_ORIGIN)
+    ? $origin
+    : ALLOWED_ORIGIN;
+
+header("Access-Control-Allow-Origin: $allowedOrigin");
+header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
+header("Access-Control-Max-Age: 86400");
+header('Content-Type: application/json');
 
-require '../database/db.php';
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(204);
+    exit;
+}
 
-// 1. Receive JSON Data
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    echo json_encode(['success' => false, 'error' => 'Method not allowed']);
+    exit;
+}
+
+// ── Input ─────────────────────────────────────────────────
 $input = json_decode(file_get_contents('php://input'), true);
 
 if (!$input) {
@@ -13,18 +33,25 @@ if (!$input) {
     exit;
 }
 
-$apiKey = $input['apiKey'] ?? '';
-$tabs   = $input['tabs'] ?? [];
-$bookmarks = $input['bookmarks'] ?? []; 
-$history = $input['history'] ?? [];     
+$apiKey      = $input['apiKey']    ?? '';
+$tabs        = $input['tabs']      ?? [];
+$bookmarks   = $input['bookmarks'] ?? [];
+$history     = $input['history']   ?? [];
+$deviceName  = $input['device']    ?? 'Extension';
+$browserName = $input['browser']   ?? 'Unknown Browser';
+$saveType    = $input['save_type'] ?? 'Manual';
 
-$deviceName = $input['device'] ?? 'Extension';
-$browserName = $input['browser'] ?? 'Unknown Browser'; 
-$saveType = $input['save_type'] ?? 'Manual';
+if (empty($apiKey)) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'error' => 'API key is required']);
+    exit;
+}
 
-// 2. Verify User
+// ── API key verification (SHA-256 hash comparison) ────────
+$hashedKey = hash('sha256', $apiKey);
+
 $stmt = $pdo->prepare("SELECT id FROM users WHERE api_key = ?");
-$stmt->execute([$apiKey]);
+$stmt->execute([$hashedKey]);
 $user = $stmt->fetch();
 
 if (!$user) {
@@ -35,134 +62,132 @@ if (!$user) {
 
 $userId = $user['id'];
 
-// Helper Function: Parse URLs into Search Queries
-function extractSearchData($url) {
+// ── Search URL parser ─────────────────────────────────────
+function extractSearchData(string $url): ?array {
     $parsed = parse_url($url);
-    if (!$parsed || !isset($parsed['host']) || !isset($parsed['query'])) return null;
+    if (!$parsed || !isset($parsed['host'], $parsed['query'])) return null;
 
     $host = strtolower($parsed['host']);
-    parse_str($parsed['query'], $queryParams);
+    parse_str($parsed['query'], $q);
 
-    $engine = null;
-    $query = null;
+    $map = [
+        'google.'      => ['param' => 'q',             'engine' => 'Google'],
+        'bing.com'     => ['param' => 'q',             'engine' => 'Bing'],
+        'yahoo.com'    => ['param' => 'p',             'engine' => 'Yahoo'],
+        'duckduckgo.com' => ['param' => 'q',           'engine' => 'DuckDuckGo'],
+        'youtube.com'  => ['param' => 'search_query',  'engine' => 'YouTube'],
+    ];
 
-    if (strpos($host, 'google.') !== false && isset($queryParams['q'])) {
-        $engine = 'Google'; $query = $queryParams['q'];
-    } elseif (strpos($host, 'bing.com') !== false && isset($queryParams['q'])) {
-        $engine = 'Bing'; $query = $queryParams['q'];
-    } elseif (strpos($host, 'yahoo.com') !== false && isset($queryParams['p'])) {
-        $engine = 'Yahoo'; $query = $queryParams['p'];
-    } elseif (strpos($host, 'duckduckgo.com') !== false && isset($queryParams['q'])) {
-        $engine = 'DuckDuckGo'; $query = $queryParams['q'];
-    } elseif (strpos($host, 'youtube.com') !== false && isset($queryParams['search_query'])) {
-        $engine = 'YouTube'; $query = $queryParams['search_query'];
-    }
-
-    if ($engine && $query && trim($query) !== '') {
-        return ['engine' => $engine, 'query' => trim($query)];
+    foreach ($map as $domain => $config) {
+        if (strpos($host, $domain) !== false && isset($q[$config['param']])) {
+            $query = trim($q[$config['param']]);
+            if ($query !== '') return ['engine' => $config['engine'], 'query' => $query];
+        }
     }
     return null;
 }
 
 try {
-    // Start Transaction for 3NF Relational Integrity
     $pdo->beginTransaction();
 
-    // 3. Lookup or Insert Device
+    // ── Device ────────────────────────────────────────────
     $stmt = $pdo->prepare("SELECT id FROM devices WHERE device_name = ?");
     $stmt->execute([$deviceName]);
-    $deviceRow = $stmt->fetch();
-    if ($deviceRow) {
-        $deviceId = $deviceRow['id'];
+    $row = $stmt->fetch();
+    if ($row) {
+        $deviceId = $row['id'];
     } else {
         $stmt = $pdo->prepare("INSERT INTO devices (device_name) VALUES (?)");
         $stmt->execute([$deviceName]);
         $deviceId = $pdo->lastInsertId();
     }
 
-    // 4. Lookup or Insert Browser
+    // ── Browser ───────────────────────────────────────────
     $stmt = $pdo->prepare("SELECT id FROM browsers WHERE browser_name = ?");
     $stmt->execute([$browserName]);
-    $browserRow = $stmt->fetch();
-    if ($browserRow) {
-        $browserId = $browserRow['id'];
+    $row = $stmt->fetch();
+    if ($row) {
+        $browserId = $row['id'];
     } else {
         $stmt = $pdo->prepare("INSERT INTO browsers (browser_name) VALUES (?)");
         $stmt->execute([$browserName]);
         $browserId = $pdo->lastInsertId();
     }
 
-    // 5. Save the Session State
-    $stmt = $pdo->prepare("INSERT INTO browser_states (user_id, state_name, device_id, browser_id, save_type) VALUES (?, ?, ?, ?, ?)");
+    // ── Browser state ─────────────────────────────────────
     $stateName = "Session - " . date("M d H:i");
+    $stmt = $pdo->prepare(
+        "INSERT INTO browser_states (user_id, state_name, device_id, browser_id, save_type)
+         VALUES (?, ?, ?, ?, ?)"
+    );
     $stmt->execute([$userId, $stateName, $deviceId, $browserId, $saveType]);
     $stateId = $pdo->lastInsertId();
 
-    // 6. Save the Tabs
+    // ── Tabs ──────────────────────────────────────────────
     if (!empty($tabs)) {
-        $stmt = $pdo->prepare("INSERT INTO tabs (state_id, url, title, tab_order) VALUES (?, ?, ?, ?)");
-        foreach ($tabs as $index => $tab) {
-            $url = $tab['url'] ?? '';
-            $title = $tab['title'] ?? 'Untitled';
-            $stmt->execute([$stateId, $url, $title, $index]);
+        $stmt = $pdo->prepare(
+            "INSERT INTO tabs (state_id, url, title, tab_order) VALUES (?, ?, ?, ?)"
+        );
+        foreach ($tabs as $i => $tab) {
+            $stmt->execute([$stateId, $tab['url'] ?? '', $tab['title'] ?? 'Untitled', $i]);
         }
     }
 
-    // 7. Save Bookmarks (Using INSERT IGNORE to prevent duplicates)
+    // ── Bookmarks ─────────────────────────────────────────
     if (!empty($bookmarks)) {
-        $stmt = $pdo->prepare("INSERT IGNORE INTO bookmarks (user_id, title, url, device_id, browser_id) VALUES (?, ?, ?, ?, ?)");
+        $stmt = $pdo->prepare(
+            "INSERT IGNORE INTO bookmarks (user_id, title, url, device_id, browser_id)
+             VALUES (?, ?, ?, ?, ?)"
+        );
         foreach ($bookmarks as $bm) {
-            $url = $bm['url'] ?? '';
-            $title = $bm['title'] ?? 'Untitled';
-            $stmt->execute([$userId, $title, $url, $deviceId, $browserId]);
+            $stmt->execute([$userId, $bm['title'] ?? 'Untitled', $bm['url'] ?? '', $deviceId, $browserId]);
         }
     }
 
-// 8. Save Search History
+    // ── Search history ────────────────────────────────────
     if (!empty($history)) {
-        $engineCache = []; 
-        
-        // ADDED "IGNORE" BACK: This tells MySQL to quietly skip duplicates instead of crashing
-        $stmtSearch = $pdo->prepare("INSERT IGNORE INTO search_history (user_id, search_query, raw_url, search_engine_id, browser_id, device_id) VALUES (?, ?, ?, ?, ?, ?)");
-        
-        foreach ($history as $histItem) {
-            $rawUrl = $histItem['url'] ?? '';
+        $engineCache = [];
+        $stmtSearch  = $pdo->prepare(
+            "INSERT IGNORE INTO search_history
+             (user_id, search_query, raw_url, search_engine_id, browser_id, device_id, visited_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?)"
+        );
+
+        foreach ($history as $item) {
+            $rawUrl     = $item['url'] ?? '';
             $searchData = extractSearchData($rawUrl);
-            
-            if ($searchData) {
-                $engineName = $searchData['engine'];
-                $searchQuery = $searchData['query'];
-                
-                // Lookup or Insert Search Engine
-                if (!isset($engineCache[$engineName])) {
-                    $stmt = $pdo->prepare("SELECT id FROM search_engines WHERE engine_name = ?");
+            if (!$searchData) continue;
+
+            $engineName  = $searchData['engine'];
+            $searchQuery = $searchData['query'];
+            $visitedAt   = !empty($item['visited_at'])
+                ? date('Y-m-d H:i:s', intval($item['visited_at']) / 1000)
+                : null;
+
+            if (!isset($engineCache[$engineName])) {
+                $stmt = $pdo->prepare("SELECT id FROM search_engines WHERE engine_name = ?");
+                $stmt->execute([$engineName]);
+                $row = $stmt->fetch();
+                if ($row) {
+                    $engineCache[$engineName] = $row['id'];
+                } else {
+                    $stmt = $pdo->prepare("INSERT INTO search_engines (engine_name) VALUES (?)");
                     $stmt->execute([$engineName]);
-                    $engineRow = $stmt->fetch();
-                    
-                    if ($engineRow) {
-                        $engineCache[$engineName] = $engineRow['id'];
-                    } else {
-                        $stmt = $pdo->prepare("INSERT INTO search_engines (engine_name) VALUES (?)");
-                        $stmt->execute([$engineName]);
-                        $engineCache[$engineName] = $pdo->lastInsertId();
-                    }
+                    $engineCache[$engineName] = $pdo->lastInsertId();
                 }
-                
-                $engineId = $engineCache[$engineName];
-                
-                // Execute the insert (duplicates will be silently ignored by the DB)
-                $stmtSearch->execute([$userId, $searchQuery, $rawUrl, $engineId, $browserId, $deviceId]);
             }
+
+            $stmtSearch->execute([
+                $userId, $searchQuery, $rawUrl,
+                $engineCache[$engineName], $browserId, $deviceId, $visitedAt
+            ]);
         }
     }
 
-    // 9. Commit the Transaction
     $pdo->commit();
-
-    echo json_encode(['success' => true, 'message' => 'State, Bookmarks, and History saved successfully!']);
+    echo json_encode(['success' => true, 'message' => 'State, bookmarks, and history saved.']);
 
 } catch (PDOException $e) {
-    // Rollback changes if anything fails
     $pdo->rollBack();
     echo json_encode(['success' => false, 'error' => $e->getMessage()]);
 }

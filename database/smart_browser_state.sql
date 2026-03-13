@@ -84,12 +84,13 @@ CREATE TABLE IF NOT EXISTS `search_history` (
   `search_engine_id` int(11) DEFAULT NULL,
   `browser_id` int(11) DEFAULT NULL,
   `device_id` int(11) DEFAULT NULL,
+  `visited_at` datetime DEFAULT NULL COMMENT 'Original browser visit time from extension',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
   FOREIGN KEY (`search_engine_id`) REFERENCES `search_engines`(`id`) ON DELETE SET NULL,
   FOREIGN KEY (`browser_id`) REFERENCES `browsers`(`id`) ON DELETE SET NULL,
   FOREIGN KEY (`device_id`) REFERENCES `devices`(`id`) ON DELETE SET NULL,
-  UNIQUE KEY `unique_user_search` (`user_id`, `raw_url`(255), `created_at`)
+  UNIQUE KEY `unique_user_search` (`user_id`, `raw_url`(255), `visited_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 COMMIT;

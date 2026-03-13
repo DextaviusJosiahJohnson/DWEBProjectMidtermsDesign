@@ -1,43 +1,36 @@
 <?php
-session_start();
+require 'includes/auth.php';
 require 'database/db.php';
 
-// 1. Security Check
-if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
-    exit();
-}
-
-$user_id = $_SESSION['user_id'];
+$user_id   = $_SESSION['user_id'];
 $user_name = $_SESSION['fullname'];
 
-// A. Total Saved Sessions
 $stmt = $pdo->prepare("SELECT COUNT(*) FROM browser_states WHERE user_id = ?");
 $stmt->execute([$user_id]);
 $total_sessions = $stmt->fetchColumn();
 
-// B. Active Devices (Count unique device IDs instead of text)
 $stmt = $pdo->prepare("SELECT COUNT(DISTINCT device_id) FROM browser_states WHERE user_id = ?");
 $stmt->execute([$user_id]);
 $active_devices = $stmt->fetchColumn();
 
-// C. Recent States (Get top 3 with JOINs)
-$stmt = $pdo->prepare("SELECT bs.*, d.device_name AS device,
-        (SELECT COUNT(*) FROM tabs t WHERE t.state_id = bs.id) AS tab_count
-        FROM browser_states bs
-        LEFT JOIN devices d ON bs.device_id = d.id
-        WHERE bs.user_id = ? 
-        ORDER BY bs.created_at DESC LIMIT 3");
+$stmt = $pdo->prepare(
+    "SELECT bs.*, d.device_name AS device,
+     (SELECT COUNT(*) FROM tabs t WHERE t.state_id = bs.id) AS tab_count
+     FROM browser_states bs
+     LEFT JOIN devices d ON bs.device_id = d.id
+     WHERE bs.user_id = ?
+     ORDER BY bs.created_at DESC LIMIT 3"
+);
 $stmt->execute([$user_id]);
 $recent_states = $stmt->fetchAll();
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard | Smart Browser State Manager</title>
+  <script nonce="<?= $nonce ?>">(function(){var t=localStorage.getItem("surtr_theme")||"minimal";document.documentElement.setAttribute("data-theme",t);})();</script>
   <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/pages/dashboard.css">
@@ -45,18 +38,18 @@ $recent_states = $stmt->fetchAll();
 <body>
 
   <div class="mobile-top">
-    <div class="burger" onclick="toggleMenu()">☰</div>
+    <div class="burger" id="burgerBtn">☰</div>
   </div>
 
-  <div class="layout"> 
+  <div class="layout">
     <aside class="sidebar" id="sidebar">
       <div class="brand">Smart Browser State</div>
-      <div class="nav-item active" >Dashboard</div>
-      <div class="nav-item" onclick="goTo('saved-states.php')">Saved States</div>
-      <div class="nav-item" onclick="goTo('bookmarks.php')">Bookmarks</div>
-      <div class="nav-item "onclick="goTo('search-history.php')">Search History</div>
-      <div class="nav-item" onclick="goTo('settings.php')">Settings</div>
-      <div class="nav-item" onclick="goTo('landing.php')">Logout</div>
+      <div class="nav-item active">Dashboard</div>
+      <a class="nav-item" href="saved-states.php">Saved States</a>
+      <a class="nav-item" href="bookmarks.php">Bookmarks</a>
+      <a class="nav-item" href="search-history.php">Search History</a>
+      <a class="nav-item" href="settings.php">Settings</a>
+      <a class="nav-item" href="logout.php">Logout</a>
     </aside>
 
     <main class="main">
@@ -68,14 +61,12 @@ $recent_states = $stmt->fetchAll();
       <section class="status-bar">
         <div class="status-item">
           <span class="label">API Connection</span>
-          <span class="value active">
-            <span class="dot"></span> Active
-          </span>
+          <span class="value active"><span class="dot"></span> Active</span>
         </div>
         <div class="status-item">
           <span class="label">Your API Key</span>
-          <span class="value" style="font-size: 0.8rem; font-family: monospace;">
-             (To access API Key, Check Settings)
+          <span class="value" style="font-size:0.8rem;font-family:monospace;">
+            (To access API Key, Check Settings)
           </span>
         </div>
       </section>
@@ -93,7 +84,7 @@ $recent_states = $stmt->fetchAll();
           <h2>—</h2>
           <p>Auto-Saves</p>
         </div>
-      </section> 
+      </section>
 
       <section class="table-container">
         <h3>Recent Browser States</h3>
@@ -101,44 +92,41 @@ $recent_states = $stmt->fetchAll();
         <table>
           <thead>
             <tr>
-              <th>Date</th>
-              <th>Device</th>
-              <th>Tabs</th>
-              <th>Action</th>
+              <th>Date</th><th>Device</th><th>Tabs</th><th>Action</th>
             </tr>
           </thead>
           <tbody>
-            <?php foreach ($recent_states as $state): 
-                $count = $state['tab_count'];
-            ?>
+            <?php foreach ($recent_states as $state): ?>
             <tr>
               <td><?= date("M d, Y", strtotime($state['created_at'])) ?></td>
-              <td><?= htmlspecialchars($state['device']) ?></td>
-              <td><?= $count ?></td>
+              <td><?= htmlspecialchars($state['device'] ?? 'Unknown') ?></td>
+              <td><?= intval($state['tab_count']) ?></td>
               <td>
-                <a href="#" class="view-btn" onclick="openModal(<?= $state['id'] ?>); return false;">View</a>
+                <a href="#" class="view-btn"
+                   data-state-id="<?= intval($state['id']) ?>">View</a>
               </td>
             </tr>
             <?php endforeach; ?>
           </tbody>
         </table>
         <?php else: ?>
-            <p style="padding:1rem; color:#666;">No sessions saved yet.</p>
+          <p style="padding:1rem;color:#666;">No sessions saved yet.</p>
         <?php endif; ?>
       </section>
     </main>
   </div>
 
-   <?php include 'includes/modal.php'; ?>
-   <?php include 'includes/restore-confirmation.php'; ?>
-   
-   <script>
-       // This allows our modal.js to talk to the backend
-       const API_BASE_URL = 'ajax/';
-   </script>
-   <script src="script/modal.js"></script>
-   <script src="script/nav.js" ></script>
+  <?php include 'includes/modal.php'; ?>
+  <?php include 'includes/restore-confirmation.php'; ?>
+
+  <script nonce="<?= $nonce ?>">
+    const API_BASE_URL = 'ajax/';
+    const CSRF_TOKEN   = '<?= $_SESSION['csrf_token'] ?>';
+  </script>
+  <script src="script/modal.js"></script>
+  <script src="script/nav.js"></script>
+  <script src="script/dashboard.js"></script>
+  <script src="script/theme-switcher.js"></script>
 
 </body>
-
 </html>

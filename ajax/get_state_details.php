@@ -1,24 +1,39 @@
 <?php
 session_start();
 require '../database/db.php';
+header('Content-Type: application/json');
 
-if (!isset($_SESSION['user_id']) || !isset($_GET['id'])) exit;
+// ── Auth check ────────────────────────────────────────────
+if (!isset($_SESSION['user_id'])) {
+    http_response_code(401);
+    echo json_encode([]);
+    exit;
+}
 
-$stateId = $_GET['id'];
-$userId = $_SESSION['user_id'];
+// ── Input validation — cast and range-check the ID ────────
+$stateId = intval($_GET['id'] ?? 0);
+$userId  = $_SESSION['user_id'];
 
-// 1. Verify this state belongs to the logged-in user
+if ($stateId <= 0) {
+    http_response_code(400);
+    echo json_encode([]);
+    exit;
+}
+
+// ── Ownership verification ────────────────────────────────
 $stmt = $pdo->prepare("SELECT id FROM browser_states WHERE id = ? AND user_id = ?");
 $stmt->execute([$stateId, $userId]);
-$state = $stmt->fetch();
 
-if ($state) {
-    // 2. Fetch the tabs associated with this state
-    $tabStmt = $pdo->prepare("SELECT title, url FROM tabs WHERE state_id = ? ORDER BY tab_order ASC");
-    $tabStmt->execute([$stateId]);
-    $tabs = $tabStmt->fetchAll(PDO::FETCH_ASSOC);
-    
-    // 3. Encode back to JSON for the frontend JavaScript to digest
-    echo json_encode($tabs); 
+if (!$stmt->fetch()) {
+    http_response_code(403);
+    echo json_encode([]);
+    exit;
 }
+
+// ── Fetch tabs ────────────────────────────────────────────
+$tabStmt = $pdo->prepare(
+    "SELECT title, url FROM tabs WHERE state_id = ? ORDER BY tab_order ASC"
+);
+$tabStmt->execute([$stateId]);
+echo json_encode($tabStmt->fetchAll(PDO::FETCH_ASSOC));
 ?>

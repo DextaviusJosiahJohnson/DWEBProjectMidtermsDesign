@@ -1,81 +1,66 @@
 <?php
 session_start();
-require '../database/db.php'; 
+require '../database/db.php';
+header('Content-Type: application/json');
 
 if (!isset($_SESSION['user_id'])) {
-    die('<div class="empty-state"><h3>Please log in to view states.</h3></div>');
+    echo json_encode(['error' => 'Unauthorized', 'data' => [], 'total' => 0]);
+    exit;
 }
 
 $user_id = $_SESSION['user_id'];
-$device = $_GET['device'] ?? '';
+$device  = $_GET['device']  ?? '';
 $browser = $_GET['browser'] ?? '';
-$date = $_GET['date'] ?? '';
+$date    = $_GET['date']    ?? '';
+$page    = max(1, intval($_GET['page']  ?? 1));
+$limit   = max(1, min(100, intval($_GET['limit'] ?? 20)));
+$offset  = ($page - 1) * $limit;
 
-// 1. Base query with JOINs and a subquery for tab count
-$sql = "SELECT bs.*, d.device_name AS device, b.browser_name AS browser,
-        (SELECT COUNT(*) FROM tabs t WHERE t.state_id = bs.id) AS tab_count
-        FROM browser_states bs
-        LEFT JOIN devices d ON bs.device_id = d.id
-        LEFT JOIN browsers b ON bs.browser_id = b.id
-        WHERE bs.user_id = :uid";
+// ── Build shared WHERE clause ─────────────────────────────
+$where  = " WHERE bs.user_id = :uid";
 $params = [':uid' => $user_id];
 
-// 2. Filters (Now filtering against the joined table columns)
-if(!empty($device)){
-    $sql .= " AND d.device_name = :device";
-    $params[':device'] = $device;
-}
-if(!empty($browser)){
-    $sql .= " AND b.browser_name = :browser";
-    $params[':browser'] = $browser;
-}
-if(!empty($date)){
-    $sql .= " AND DATE(bs.created_at) = :date";
-    $params[':date'] = $date;
-}
+if (!empty($device))  { $where .= " AND d.device_name  = :device";  $params[':device']  = $device;  }
+if (!empty($browser)) { $where .= " AND b.browser_name = :browser"; $params[':browser'] = $browser; }
+if (!empty($date))    { $where .= " AND DATE(bs.created_at) = :date"; $params[':date']  = $date;    }
 
-$sql .= " ORDER BY bs.created_at DESC";
+// ── Total count ───────────────────────────────────────────
+$countSql = "SELECT COUNT(*)
+             FROM browser_states bs
+             LEFT JOIN devices  d ON bs.device_id  = d.id
+             LEFT JOIN browsers b ON bs.browser_id = b.id"
+             . $where;
 
-$stmt = $pdo->prepare($sql);
-$stmt->execute($params);
-$states = $stmt->fetchAll();
+$countStmt = $pdo->prepare($countSql);
+$countStmt->execute($params);
+$total = (int) $countStmt->fetchColumn();
 
-if(count($states) > 0){
-    foreach($states as $state){
-        $saveType = $state['save_type'] ?? 'Manual'; 
-        $badgeClass = ($saveType === 'Auto-saved') ? 'auto' : 'manual';
-        $tabCount = $state['tab_count'];
+// ── Paginated data ────────────────────────────────────────
+$dataSql = "SELECT bs.id, bs.created_at, bs.save_type,
+            d.device_name  AS device,
+            b.browser_name AS browser,
+            (SELECT COUNT(*) FROM tabs t WHERE t.state_id = bs.id) AS tab_count
+            FROM browser_states bs
+            LEFT JOIN devices  d ON bs.device_id  = d.id
+            LEFT JOIN browsers b ON bs.browser_id = b.id"
+            . $where
+            . " ORDER BY bs.created_at DESC
+               LIMIT :limit OFFSET :offset";
 
-        echo '<div class="state-card">
-                <div class="state-left">
-                  <div class="device-icon">';
-        
-        $deviceVal = $state['device'] ?? 'Laptop';
-        switch(strtolower($deviceVal)){ 
-            case 'laptop': echo '💻'; break;
-            case 'desktop': echo '🖥️'; break;
-            case 'work pc': echo '🖥️'; break;
-            case 'mobile': echo '📱'; break;
-            default: echo '💻';
-        }
-        echo '</div>
-                  <div class="state-info">
-                    <h4>'.date("M d, Y", strtotime($state['created_at'])).'</h4>
-                    <div class="meta">
-                      <span>'.$tabCount.' tabs</span>
-                      <span>'.htmlspecialchars($state['browser'] ?? 'Unknown').'</span>
-                      <span class="badge '.$badgeClass.'">'.$saveType.'</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="state-actions">  
-                  <a href="#" class="view-link" onclick="openModal('.$state['id'].'); return false;">View</a>
-                  <button class="danger">Delete</button>
-                  <button class="primary restore">Restore</button>
-                </div>
-              </div>';
-    }
-} else {
-    echo '<div class="empty-state"><h3>No saved states found</h3></div>';
+$dataStmt = $pdo->prepare($dataSql);
+foreach ($params as $key => $val) {
+    $dataStmt->bindValue($key, $val);
 }
+$dataStmt->bindValue(':limit',  $limit,  PDO::PARAM_INT);
+$dataStmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+$dataStmt->execute();
+$states = $dataStmt->fetchAll();
+
+echo json_encode([
+    'data'        => $states,
+    'total'       => $total,
+    'page'        => $page,
+    'limit'       => $limit,
+    'total_pages' => $total > 0 ? (int) ceil($total / $limit) : 0,
+]);
 ?>

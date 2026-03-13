@@ -1,152 +1,145 @@
-document.addEventListener("DOMContentLoaded", function() {
-    
-    // API KEY ELEMENTS
-    const genKeyBtn = document.getElementById('generateKeyBtn');
-    const copyKeyBtn = document.getElementById('copyKeyBtn');
-    const apiKeyField = document.getElementById('apiKeyField');
+document.addEventListener("DOMContentLoaded", function () {
 
-    /* =========================================
-       1. GENERATE API KEY LOGIC
-       ========================================= */
-    if(genKeyBtn) {
-        genKeyBtn.addEventListener('click', () => {
+    const genKeyBtn     = document.getElementById('generateKeyBtn');
+    const copyKeyBtn    = document.getElementById('copyKeyBtn');
+    const apiKeyField   = document.getElementById('apiKeyField');
+
+    /* ── 1. GENERATE API KEY ─────────────────────────────── */
+    if (genKeyBtn) {
+        genKeyBtn.addEventListener('click', function () {
             genKeyBtn.textContent = "Generating...";
-            genKeyBtn.disabled = true;
+            genKeyBtn.disabled    = true;
 
-            fetch('ajax/generate_api_key.php')
-                .then(res => res.json())
-                .then(data => {
-                    if(data.success) {
-                        // Update UI
-                        apiKeyField.value = data.apiKey;
-                        genKeyBtn.style.display = 'none'; // Hide Generate
-                        copyKeyBtn.style.display = 'block'; // Show Copy
-                        alert("API Key generated successfully!");
+            fetch('ajax/generate_api_key.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': CSRF_TOKEN
+                }
+            })
+                .then(function (res) { return res.json(); })
+                .then(function (data) {
+                    if (data.success) {
+                        apiKeyField.value        = data.apiKey;
+                        genKeyBtn.style.display  = 'none';
+                        copyKeyBtn.style.display = 'block';
+                        alert("API Key generated successfully! Copy it now — it cannot be recovered after leaving this page.");
                     } else {
                         alert("Error: " + data.error);
                         genKeyBtn.textContent = "Generate Key";
-                        genKeyBtn.disabled = false;
+                        genKeyBtn.disabled    = false;
                     }
                 })
-                .catch(err => {
+                .catch(function (err) {
                     console.error(err);
                     alert("Failed to connect to server.");
                     genKeyBtn.textContent = "Generate Key";
-                    genKeyBtn.disabled = false;
+                    genKeyBtn.disabled    = false;
                 });
         });
     }
 
-    /* =========================================
-       2. COPY KEY LOGIC
-       ========================================= */
-    if(copyKeyBtn) {
-        copyKeyBtn.addEventListener('click', () => {
-            if(!apiKeyField.value) return;
-            
+    /* ── 2. COPY KEY ─────────────────────────────────────── */
+    if (copyKeyBtn) {
+        copyKeyBtn.addEventListener('click', function () {
+            if (!apiKeyField.value) return;
             navigator.clipboard.writeText(apiKeyField.value)
-                .then(() => {
-                    const originalText = copyKeyBtn.textContent;
+                .then(function () {
+                    var orig = copyKeyBtn.textContent;
                     copyKeyBtn.textContent = "Copied!";
-                    setTimeout(() => copyKeyBtn.textContent = originalText, 2000);
+                    setTimeout(function () { copyKeyBtn.textContent = orig; }, 2000);
                 })
-                .catch(err => alert("Failed to copy text"));
+                .catch(function () { alert("Failed to copy text"); });
         });
     }
 
+    /* ── 3. DELETE ACCOUNT ───────────────────────────────── */
+    var deleteBtn         = document.getElementById("delete");
+    var confirmDeleteBtn  = document.getElementById("confirmDeleteBtn");
 
-    /* =========================================
-       3. EXISTING SETTINGS LOGIC (Password/Delete)
-       ========================================= */
-    const toggleBtn = document.getElementById("togglePasswordBtn");
-    const collapse = document.getElementById("passwordCollapse");
-    const passwordForm = document.getElementById("passwordForm");
-    const deleteBtn = document.getElementById("delete");
-    const newPassword = document.getElementById("newPassword");
-    const confirmPassword = document.getElementById("confirmPassword");
-    const matchError = document.getElementById("matchError");
-    const strengthBar = document.getElementById("strengthBar");
-    const strengthText = document.getElementById("strengthText");
-
-    // DELETE ACCOUNT
-    if(deleteBtn){
-        deleteBtn.addEventListener("click", () => {
-            const deleteModal = document.getElementById('deleteModal');
-            if(deleteModal) {
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', function () {
+            var deleteModal = document.getElementById('deleteModal');
+            if (deleteModal) {
                 deleteModal.classList.add('active');
-                const confirmDelete = deleteModal.querySelector('.primary');
-                if(confirmDelete) {
-                    // Clone to remove old listeners
-                    const newBtn = confirmDelete.cloneNode(true);
-                    confirmDelete.parentNode.replaceChild(newBtn, confirmDelete);
-                    newBtn.addEventListener('click', executeDelete);
-                }
             } else {
-                if(confirm("Are you sure? This is permanent.")) executeDelete();
+                if (confirm("Are you sure? This is permanent.")) executeDelete();
             }
         });
     }
 
-    // Helper to close the delete modal if user cancels
-    window.closeDeleteModal = function() {
-        const deleteModal = document.getElementById('deleteModal');
-        if(deleteModal) deleteModal.classList.remove('active');
+    // Wire confirm button from delete-confirmation.php
+    if (confirmDeleteBtn) {
+        confirmDeleteBtn.addEventListener('click', executeDelete);
     }
 
     function executeDelete() {
         fetch('ajax/update_settings.php', {
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': CSRF_TOKEN
+            },
             body: JSON.stringify({ action: 'delete_account' })
         })
-        .then(res => res.json())
-        .then(data => {
-            if(data.success) {
-                // FIXED: Redirect to login.php instead of index.php
-                window.location.href = 'login.php';
-            }
-            else {
-                alert("Error: " + data.error);
-            }
-        });
+            .then(function (res) { return res.json(); })
+            .then(function (data) {
+                if (data.success) {
+                    window.location.href = 'login.php';
+                } else {
+                    alert("Error: " + data.error);
+                }
+            });
     }
 
-    // CHANGE PASSWORD
-    if(passwordForm){
-        passwordForm.addEventListener("submit", (e) => {
+    /* ── 4. CHANGE PASSWORD ──────────────────────────────── */
+    var toggleBtn       = document.getElementById("togglePasswordBtn");
+    var collapse        = document.getElementById("passwordCollapse");
+    var passwordForm    = document.getElementById("passwordForm");
+    var newPassword     = document.getElementById("newPassword");
+    var confirmPassword = document.getElementById("confirmPassword");
+    var matchError      = document.getElementById("matchError");
+    var strengthBar     = document.getElementById("strengthBar");
+    var strengthText    = document.getElementById("strengthText");
+
+    if (passwordForm) {
+        passwordForm.addEventListener("submit", function (e) {
             e.preventDefault();
             if (newPassword.value !== confirmPassword.value) {
                 matchError.textContent = "Passwords do not match";
                 return;
             }
+            var current = document.getElementById("currentPassword").value;
 
-            const current = document.getElementById("currentPassword").value;
             fetch('ajax/update_settings.php', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    action: 'change_password',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': CSRF_TOKEN
+                },
+                body: JSON.stringify({
+                    action:          'change_password',
                     currentPassword: current,
-                    newPassword: newPassword.value
+                    newPassword:     newPassword.value
                 })
             })
-            .then(res => res.json())
-            .then(data => {
-                if(data.success) {
-                    alert("Password updated!");
-                    passwordForm.reset();
-                    strengthBar.style.width = "0%";
-                    strengthText.textContent = "";
-                    toggleBtn.click();
-                } else {
-                    matchError.textContent = data.error || "Update failed";
-                }
-            });
+                .then(function (res) { return res.json(); })
+                .then(function (data) {
+                    if (data.success) {
+                        alert("Password updated!");
+                        passwordForm.reset();
+                        strengthBar.style.width  = "0%";
+                        strengthText.textContent = "";
+                        toggleBtn.click();
+                    } else {
+                        matchError.textContent = data.error || "Update failed";
+                    }
+                });
         });
     }
 
-    // UI INTERACTIONS
-    if(toggleBtn && collapse) {
-        toggleBtn.addEventListener("click", () => {
+    if (toggleBtn && collapse) {
+        toggleBtn.addEventListener("click", function () {
             if (collapse.classList.contains("open")) {
                 collapse.style.maxHeight = null;
                 collapse.classList.remove("open");
@@ -159,39 +152,36 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    if(confirmPassword && newPassword) {
-        confirmPassword.addEventListener("input", () => {
-            if (confirmPassword.value !== newPassword.value) {
-                matchError.textContent = "Passwords do not match.";
-            } else {
-                matchError.textContent = "";
-            }
+    if (confirmPassword && newPassword) {
+        confirmPassword.addEventListener("input", function () {
+            matchError.textContent = confirmPassword.value !== newPassword.value
+                ? "Passwords do not match." : "";
         });
     }
 
-    if(newPassword && strengthBar) {
-        newPassword.addEventListener("input", () => {
-            const val = newPassword.value;
-            let strength = 0;
-            if (val.length > 7) strength++;
-            if (/[A-Z]/.test(val)) strength++;
-            if (/[0-9]/.test(val)) strength++;
-            if (/[^A-Za-z0-9]/.test(val)) strength++;
+    if (newPassword && strengthBar) {
+        newPassword.addEventListener("input", function () {
+            var val      = newPassword.value;
+            var strength = 0;
+            if (val.length > 7)            strength++;
+            if (/[A-Z]/.test(val))         strength++;
+            if (/[0-9]/.test(val))         strength++;
+            if (/[^A-Za-z0-9]/.test(val))  strength++;
 
-            const levels = [
-                { width: "25%", color: "#dc2626", text: "Weak" },
-                { width: "50%", color: "#f59e0b", text: "Fair" },
-                { width: "75%", color: "#3b82f6", text: "Good" },
+            var levels = [
+                { width: "25%",  color: "#dc2626", text: "Weak"   },
+                { width: "50%",  color: "#f59e0b", text: "Fair"   },
+                { width: "75%",  color: "#3b82f6", text: "Good"   },
                 { width: "100%", color: "#16a34a", text: "Strong" }
             ];
 
             if (strength === 0) {
-                strengthBar.style.width = "0%";
+                strengthBar.style.width  = "0%";
                 strengthText.textContent = "";
             } else {
-                strengthBar.style.width = levels[strength - 1].width;
+                strengthBar.style.width      = levels[strength - 1].width;
                 strengthBar.style.background = levels[strength - 1].color;
-                strengthText.textContent = levels[strength - 1].text;
+                strengthText.textContent     = levels[strength - 1].text;
             }
         });
     }

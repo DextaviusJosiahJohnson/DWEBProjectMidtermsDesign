@@ -1,145 +1,157 @@
-document.addEventListener("DOMContentLoaded", function() {
-    // DOM Elements
-    const modal = document.getElementById('modalOverlay');
-    const tabList = document.getElementById('modalTabList');
-    const loading = document.getElementById('modalLoading');
-    const restoreBtn = document.getElementById('restoreButton');
-    
-    // Confirmation Modal Elements
-    const confirmModal = document.getElementById('confirmModal'); 
-    const finalRestoreBtn = confirmModal ? confirmModal.querySelector('.primary') : null;
+// modal.js — event delegation throughout, no direct element lookup at boot time
 
-    // State Data
-    let currentTabs = []; 
+(function () {
 
-    /**------------------------------------------------------------------------
-     * OPEN / CLOSE LOGIC
-     *------------------------------------------------------------------------**/
-    
-    window.openModal = function(stateId) {
-        if(!modal) return;
-        
-        modal.classList.add('active');
-        tabList.innerHTML = ''; // Clear previous
+    /* ── Close helpers — exposed globally ─────────────────── */
+    window.closeModal = function () {
+        var el = document.getElementById('modalOverlay');
+        if (el) el.classList.remove('active');
+    };
+
+    window.closeConfirmModal = function () {
+        var el = document.getElementById('confirmModal');
+        if (el) el.classList.remove('active');
+    };
+
+    window.closeDeleteModal = function () {
+        var el = document.getElementById('deleteModal');
+        if (el) el.classList.remove('active');
+    };
+
+    /* ── State ────────────────────────────────────────────── */
+    var currentTabs      = [];
+    var pendingRestoreId = null;
+
+    /* ── openModal ────────────────────────────────────────── */
+    window.openModal = function (stateId) {
+        var modal   = document.getElementById('modalOverlay');
+        var tabList = document.getElementById('modalTabList');
+        var loading = document.getElementById('modalLoading');
+        var restBtn = document.getElementById('restoreButton');
+        if (!modal) return;
+
+        pendingRestoreId  = null;
+        currentTabs       = [];
+        tabList.innerHTML = '';
+
         loading.style.display = 'block';
-        restoreBtn.disabled = true;
+        if (restBtn) restBtn.disabled = true;
+        modal.classList.add('active');
 
-        // Fetch Data from Backend
-        fetch(`ajax/get_state_details.php?id=${stateId}`)
-            .then(res => res.json())
-            .then(data => {
+        fetch('ajax/get_state_details.php?id=' + encodeURIComponent(stateId))
+            .then(function (res) { return res.json(); })
+            .then(function (data) {
                 loading.style.display = 'none';
-                restoreBtn.disabled = false;
-                
-                // Parse Data
-                currentTabs = Array.isArray(data) ? data : JSON.parse(data); 
+                if (restBtn) restBtn.disabled = false;
+                currentTabs = Array.isArray(data) ? data : [];
 
-                if(!currentTabs || currentTabs.length === 0) {
-                    const emptyLi = document.createElement('li');
-                    emptyLi.textContent = "No tabs found in this session.";
-                    emptyLi.style.padding = "10px";
-                    emptyLi.style.color = "#666";
-                    tabList.appendChild(emptyLi);
+                if (!currentTabs.length) {
+                    var li = document.createElement('li');
+                    li.textContent   = 'No tabs found in this session.';
+                    li.style.padding = '10px';
+                    li.style.color   = '#666';
+                    tabList.appendChild(li);
                     return;
                 }
 
-                // Render Tabs (SECURE METHOD)
-                currentTabs.forEach(tab => {
-                    const li = document.createElement('li');
-                    
-                    // 1. Create Title Row
-                    const titleDiv = document.createElement('div');
-                    titleDiv.style.overflow = 'hidden';
-                    titleDiv.style.textOverflow = 'ellipsis';
-                    titleDiv.style.whiteSpace = 'nowrap';
-                    
-                    // Icon
-                    if (tab.favIconUrl) {
-                        const img = document.createElement('img');
-                        img.src = tab.favIconUrl;
-                        img.style.width = '16px';
-                        img.style.height = '16px';
-                        img.style.verticalAlign = 'middle';
-                        img.style.marginRight = '8px';
-                        titleDiv.appendChild(img);
-                    } else {
-                        const iconSpan = document.createElement('span');
-                        iconSpan.textContent = '📄 ';
-                        titleDiv.appendChild(iconSpan);
-                    }
+                currentTabs.forEach(function (tab) {
+                    var li       = document.createElement('li');
+                    var titleDiv = document.createElement('div');
+                    titleDiv.style.cssText = 'overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
 
-                    // Title Text (Safe from XSS)
-                    const strong = document.createElement('strong');
+                    var icon = document.createElement('span');
+                    icon.textContent = '📄 ';
+                    titleDiv.appendChild(icon);
+
+                    var strong = document.createElement('strong');
                     strong.textContent = tab.title || 'Untitled Tab';
                     titleDiv.appendChild(strong);
 
-                    // 2. Create URL Row
-                    const urlDiv = document.createElement('div');
-                    urlDiv.style.fontSize = '0.8rem';
-                    urlDiv.style.color = '#888';
-                    urlDiv.style.marginLeft = '24px';
-                    urlDiv.style.overflow = 'hidden';
-                    urlDiv.style.textOverflow = 'ellipsis';
-                    urlDiv.style.whiteSpace = 'nowrap';
-                    
-                    // URL Text (Safe from XSS)
-                    urlDiv.textContent = tab.url || '#';
+                    var urlDiv = document.createElement('div');
+                    urlDiv.style.cssText = 'font-size:0.8rem;color:#888;margin-left:24px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
+                    urlDiv.textContent   = tab.url || '#';
 
-                    // Append to List Item
                     li.appendChild(titleDiv);
                     li.appendChild(urlDiv);
-                    
-                    // Append to List
                     tabList.appendChild(li);
                 });
             })
-            .catch(err => {
+            .catch(function (err) {
                 loading.style.display = 'none';
-                const errorLi = document.createElement('li');
-                errorLi.textContent = "Error loading data.";
-                errorLi.style.color = "red";
-                tabList.appendChild(errorLi);
+                var li = document.createElement('li');
+                li.textContent = 'Error loading data.';
+                li.style.color = 'red';
+                tabList.appendChild(li);
                 console.error(err);
             });
     };
 
-    window.closeModal = function() {
-        if(modal) modal.classList.remove('active');
+    /* ── showDirectRestoreConfirm ─────────────────────────── */
+    window.showDirectRestoreConfirm = function (stateId) {
+        pendingRestoreId = stateId;
+        currentTabs      = [];
+        var el = document.getElementById('confirmModal');
+        if (el) el.classList.add('active');
     };
 
-    /**------------------------------------------------------------------------
-     * RESTORE LOGIC
-     *------------------------------------------------------------------------**/
+    /* ── ALL button clicks via delegation on document ─────── */
+    document.addEventListener('click', function (e) {
+        var id = e.target && e.target.id;
 
-    if (restoreBtn) {
-        restoreBtn.addEventListener('click', () => {
-            closeModal(); 
-            if(confirmModal) confirmModal.classList.add('active');
+        // Close / cancel buttons
+        if (id === 'closeModalBtn')    { e.preventDefault(); closeModal();        return; }
+        if (id === 'cancelRestoreBtn') { e.preventDefault(); closeConfirmModal(); return; }
+        if (id === 'cancelDeleteBtn')  { e.preventDefault(); closeDeleteModal();  return; }
+
+        // "Restore All Tabs" inside the preview modal
+        if (id === 'restoreButton') {
+            e.preventDefault();
+            closeModal();
+            var confirmModal = document.getElementById('confirmModal');
+            if (confirmModal) confirmModal.classList.add('active');
+            return;
+        }
+
+        // Confirm restore
+        if (id === 'confirmRestoreBtn') {
+            e.preventDefault();
+            closeConfirmModal();
+
+            if (pendingRestoreId && currentTabs.length === 0) {
+                fetch('ajax/get_state_details.php?id=' + encodeURIComponent(pendingRestoreId))
+                    .then(function (res) { return res.json(); })
+                    .then(function (tabs) {
+                        openTabsSequentially(Array.isArray(tabs) ? tabs : []);
+                    })
+                    .catch(function (err) {
+                        console.error('Restore fetch failed:', err);
+                        alert('Failed to load tabs. Please try again.');
+                    });
+            } else {
+                openTabsSequentially(currentTabs);
+            }
+            return;
+        }
+
+        // Backdrop click — close whichever overlay was clicked directly
+        var modalOverlay  = document.getElementById('modalOverlay');
+        var confirmModal  = document.getElementById('confirmModal');
+        var deleteModal   = document.getElementById('deleteModal');
+
+        if (e.target === modalOverlay)  { closeModal();        return; }
+        if (e.target === confirmModal)  { closeConfirmModal(); return; }
+        if (e.target === deleteModal)   { closeDeleteModal();  return; }
+    });
+
+    /* ── openTabsSequentially ─────────────────────────────── */
+    function openTabsSequentially(tabs) {
+        var delay = 0;
+        tabs.forEach(function (tab) {
+            if (tab.url) {
+                setTimeout(function () { window.open(tab.url, '_blank'); }, delay);
+                delay += 200;
+            }
         });
     }
 
-    if (finalRestoreBtn) {
-        finalRestoreBtn.addEventListener('click', () => {
-            if(confirmModal) confirmModal.classList.remove('active');
-            
-            let delay = 0;
-            currentTabs.forEach(tab => {
-                if(tab.url) {
-                    setTimeout(() => {
-                        window.open(tab.url, '_blank');
-                    }, delay);
-                    delay += 200;
-                }
-            });
-        });
-    }
-
-    window.closeConfirmModal = function() {
-        if(confirmModal) confirmModal.classList.remove('active');
-    }
-
-    window.onclick = function(event) {
-        if (event.target == modal) closeModal();
-        if (event.target == confirmModal) closeConfirmModal();
-    }
-});
+})();

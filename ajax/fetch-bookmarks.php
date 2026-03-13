@@ -1,55 +1,55 @@
 <?php
 session_start();
 require '../database/db.php';
+header('Content-Type: application/json');
 
 if (!isset($_SESSION['user_id'])) {
-    die('<div class="empty-state"><h3>Please log in to view bookmarks.</h3></div>');
+    echo json_encode(['error' => 'Unauthorized', 'data' => [], 'total' => 0]);
+    exit;
 }
 
 $user_id = $_SESSION['user_id'];
-$search = $_GET['search'] ?? '';
+$search  = $_GET['search'] ?? '';
+$page    = max(1, intval($_GET['page']  ?? 1));
+$limit   = max(1, min(100, intval($_GET['limit'] ?? 20)));
+$offset  = ($page - 1) * $limit;
 
-$sql = "SELECT * FROM bookmarks WHERE user_id = :uid";
+// ── Build shared WHERE clause ─────────────────────────────
+$where  = " WHERE user_id = :uid";
 $params = [':uid' => $user_id];
 
-if(!empty($search)){
-    $sql .= " AND (title LIKE :search_title OR url LIKE :search_url)";
-    $params[':search_title'] = "%" . $search . "%";
-    $params[':search_url']   = "%" . $search . "%";
+if (!empty($search)) {
+    $where .= " AND (title LIKE :s1 OR url LIKE :s2)";
+    $params[':s1'] = '%' . $search . '%';
+    $params[':s2'] = '%' . $search . '%';
 }
 
-$sql .= " ORDER BY created_at DESC";
+// ── Total count ───────────────────────────────────────────
+$countStmt = $pdo->prepare("SELECT COUNT(*) FROM bookmarks" . $where);
+$countStmt->execute($params);
+$total = (int) $countStmt->fetchColumn();
 
-$stmt = $pdo->prepare($sql);
-$stmt->execute($params);
-$bookmarks = $stmt->fetchAll();
+// ── Paginated data ────────────────────────────────────────
+$dataSql = "SELECT id, title, url, created_at
+            FROM bookmarks"
+            . $where
+            . " ORDER BY created_at DESC
+               LIMIT :limit OFFSET :offset";
 
-if(count($bookmarks) > 0){
-
-    foreach($bookmarks as $bookmark){
-
-        echo '
-        <div class="state-card">
-            <div class="state-left">
-                <div class="device-icon">🔖</div>
-                <div class="state-info">
-                    <h4>'.htmlspecialchars($bookmark['title']).'</h4>
-                    <div class="meta">
-                        <span>'.htmlspecialchars($bookmark['url']).'</span>
-                    </div>
-                    <div class="meta">
-                        <span>'.date("M d, Y", strtotime($bookmark['created_at'])).'</span>
-                    </div>
-                </div>
-            </div>
-            <div class="state-actions">
-                <a href="'.htmlspecialchars($bookmark['url']).'" target="_blank" class="view-link">View</a>
-                <button class="danger" data-id="'.$bookmark['id'].'">Delete</button>
-            </div>
-        </div>';
-    }
-
-} else {
-    echo '<div class="empty-state"><h3>No bookmarks found</h3></div>';
+$dataStmt = $pdo->prepare($dataSql);
+foreach ($params as $key => $val) {
+    $dataStmt->bindValue($key, $val);
 }
+$dataStmt->bindValue(':limit',  $limit,  PDO::PARAM_INT);
+$dataStmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+$dataStmt->execute();
+$bookmarks = $dataStmt->fetchAll();
+
+echo json_encode([
+    'data'        => $bookmarks,
+    'total'       => $total,
+    'page'        => $page,
+    'limit'       => $limit,
+    'total_pages' => $total > 0 ? (int) ceil($total / $limit) : 0,
+]);
 ?>

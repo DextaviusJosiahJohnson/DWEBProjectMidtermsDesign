@@ -8,16 +8,20 @@
     "storage",
     "alarms",
     "bookmarks",
-    "history",
-    "downloads"
+    "history"
   ],
   "host_permissions": [
-    "http://localhost/*"
+    "http://localhost/*",
+    "https://localhost/*"
   ],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
       "48": "icon.png"
     }
+  },
+  "background": {
+    "service_worker": "background.js",
+    "scripts": ["background.js"]
   }
 }
