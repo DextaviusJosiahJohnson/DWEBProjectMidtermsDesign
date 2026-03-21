@@ -1,0 +1,46 @@
+/* ============================================================
+   BOOKMARKS
+   ============================================================ */
+
+.filter-bar input[type="text"] {
+  min-width: 220px;
+}
+
+.search-wrapper {
+  position: relative;
+  width: 300px;
+}
+
+#bookmark-search {
+  width: 100%;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  font-family: 'Albert Sans', sans-serif;
+  font-size: 0.82rem;
+  padding: 0.5rem 1rem;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+#bookmark-search:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+/* Bookmark URL in meta row — truncate gracefully */
+.state-card .meta span:first-child {
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+}
+
+@media (max-width: 768px) {
+  .search-wrapper { width: 100%; }
+
+  .state-card .meta span:first-child {
+    max-width: 200px;
+  }
+}

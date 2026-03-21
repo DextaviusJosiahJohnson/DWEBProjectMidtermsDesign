@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+
+  # ── PHP + Apache web server ──────────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sbms_app
+    ports:
+      - "8080:80"           # Access the app at http://localhost:8080
+    volumes:
+      - .:/var/www/html     # Live-mount your code — edit files, refresh browser
+    environment:
+      DB_HOST:        db
+      DB_NAME:        smart_browser_state
+      DB_USER:        root
+      DB_PASS:        sbms_root_pass
+      ALLOWED_ORIGIN: http://localhost:8080
+      APP_ENV:        development
+    depends_on:
+      db:
+        condition: service_healthy   # Wait until MySQL is actually ready
+    restart: unless-stopped
+
+  # ── MySQL 8 database ─────────────────────────────────────
+  db:
+    image: mysql:8.0
+    container_name: sbms_db
+    environment:
+      MYSQL_ROOT_PASSWORD: sbms_root_pass
+      MYSQL_DATABASE:      smart_browser_state
+    volumes:
+      - db_data:/var/lib/mysql                                        # Persistent data
+      - ./database/smart_browser_state.sql:/docker-entrypoint-initdb.d/01-init.sql  # Auto-run on first start
+    ports:
+      - "3307:3306"         # Lets you connect with TablePlus / DBeaver from your host
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-psbms_root_pass"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+    restart: unless-stopped
+    
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: sbms_pma
+    ports:
+      - "8081:80"           # Access at http://localhost:8081
+    environment:
+      PMA_HOST:     db
+      PMA_USER:     root
+      PMA_PASSWORD: sbms_root_pass
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  db_data:    # MySQL data survives container restarts/rebuilds

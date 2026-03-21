@@ -1,0 +1,7 @@
+database/.installed
+.DS_Store
+Thumbs.db
+.vscode/
+.env
+.env.local
+vendor/

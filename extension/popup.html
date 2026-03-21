@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html data-theme="division">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:wght@300;400;500;600&family=Share+Tech+Mono&family=Albert+Sans:wght@400;500;600;700;800&display=swap');
+
+    /* ── Design Tokens: Division Dark (default) ─────────── */
+    :root {
+      --bg:             #0e0d0b;
+      --bg-surface:     #161410;
+      --bg-card:        #1d1a16;
+      --primary:        #ddd5c8;
+      --muted:          #5e5248;
+      --muted-light:    #7a6e64;
+      --accent:         #FF7F00;
+      --accent-dim:     rgba(255,127,0,0.12);
+      --accent-line:    rgba(255,127,0,0.3);
+      --border:         #252018;
+      --border-strong:  #3a3028;
+      --font-body:      'Exo 2', sans-serif;
+      --font-display:   'Rajdhani', sans-serif;
+      --font-mono:      'Share Tech Mono', monospace;
+      --scanline:       block;
+    }
+
+    /* ── Tactical Minimal (Teal/Light) ──────────────────── */
+    [data-theme="minimal"] {
+      --bg:             #FFFAF2;
+      --bg-surface:     #FFFFFF;
+      --bg-card:        #FFFDF9;
+      --primary:        #0f1923;
+      --muted:          #6b7280;
+      --muted-light:    #9ca3af;
+      --accent:         #117692;
+      --accent-dim:     rgba(17,118,146,.1);
+      --accent-line:    rgba(17,118,146,.3);
+      --border:         #e4e1d8;
+      --border-strong:  #c8c4bb;
+      --font-body:      'Albert Sans', sans-serif;
+      --font-display:   'Albert Sans', sans-serif;
+      --font-mono:      'Albert Sans', sans-serif;
+      --scanline:       none;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      width: 300px;
+      background: var(--bg);
+      color: var(--primary);
+      font-family: var(--font-body);
+      font-size: 13px;
+      line-height: 1.5;
+      position: relative;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: "";
+      display: var(--scanline);
+      position: fixed;
+      inset: 0;
+      background-image: repeating-linear-gradient(
+        0deg, transparent, transparent 3px,
+        rgba(0,0,0,0.07) 3px, rgba(0,0,0,0.07) 4px
+      );
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    [data-theme="minimal"] body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 28px 28px;
+      opacity: 0.35;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .popup-inner {
+      position: relative;
+      z-index: 1;
+      padding: 14px 14px 12px;
+    }
+
+    /* ── Header ──────────────────────────────────────────── */
+    .popup-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+
+    .popup-header::after {
+      content: '';
+      position: absolute;
+      bottom: -1px; left: 0;
+      width: 32px; height: 2px;
+      background: var(--accent);
+    }
+
+    .brand { display: flex; align-items: center; gap: 7px; }
+
+    .brand-icon {
+      width: 22px; height: 22px;
+      background: var(--accent);
+      border-radius: 3px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .brand-icon svg { width: 12px; height: 12px; }
+
+    .brand-name {
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--primary);
+      line-height: 1;
+    }
+
+    .brand-sub {
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+
+    .theme-toggle {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      border-radius: 4px;
+      padding: 4px 7px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+    .theme-toggle:hover { border-color: var(--accent); }
+
+    .theme-toggle-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .theme-toggle-label {
+      font-family: var(--font-display);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted-light);
+    }
+
+    /* ── Section Label ───────────────────────────────────── */
+    .section-label {
+      font-family: var(--font-display);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .section-label::before {
+      content: '';
+      display: inline-block;
+      width: 2px; height: 10px;
+      background: var(--accent);
+      border-radius: 1px;
+      flex-shrink: 0;
+    }
+
+    /* ── Form Section ────────────────────────────────────── */
+    .form-section { margin-bottom: 12px; }
+
+    input[type="text"], input[type="password"], input[type="url"] {
+      width: 100%;
+      padding: 7px 9px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--primary);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.03em;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      outline: none;
+    }
+
+    input[type="text"]:focus,
+    input[type="password"]:focus,
+    input[type="url"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px var(--accent-dim);
+      background: var(--bg-card);
+    }
+
+    input::placeholder { color: var(--muted); opacity: 0.6; }
+
+    /* ── Interval Pills ──────────────────────────────────── */
+    .interval-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+    }
+
+    .interval-btn {
+      padding: 5px 2px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      color: var(--muted-light);
+      font-family: var(--font-display);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+    }
+
+    .interval-btn:hover {
+      border-color: var(--border-strong);
+      color: var(--primary);
+    }
+
+    .interval-btn.active {
+      background: var(--accent-dim);
+      border-color: var(--accent);
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .interval-btn[data-value="0"].active {
+      background: rgba(107,114,128,0.12);
+      border-color: var(--border-strong);
+      color: var(--muted-light);
+    }
+
+    /* ── Save Button ─────────────────────────────────────── */
+    .save-btn {
+      width: 100%;
+      padding: 9px;
+      background: var(--accent);
+      border: none;
+      border-radius: 4px;
+      color: #fff;
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .save-btn::after {
+      content: '';
+      position: absolute;
+      bottom: 0; right: 0;
+      width: 12px; height: 12px;
+      border-bottom: 1.5px solid rgba(255,255,255,0.3);
+      border-right: 1.5px solid rgba(255,255,255,0.3);
+      border-radius: 0 0 3px 0;
+    }
+
+    .save-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+    .save-btn:active { transform: translateY(0); }
+    .save-btn:disabled { opacity: 0.5; cursor: default; transform: none; }
+
+    /* ── Status ──────────────────────────────────────────── */
+    #status {
+      margin-top: 10px;
+      font-size: 11px;
+      padding: 7px 9px;
+      border-radius: 4px;
+      display: none;
+      font-family: var(--font-display);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      border-left: 2px solid;
+    }
+
+    .success {
+      background: rgba(22,163,74,0.1);
+      color: #16a34a;
+      border-left-color: #16a34a;
+    }
+
+    .error {
+      background: rgba(220,38,38,0.1);
+      color: #dc2626;
+      border-left-color: #dc2626;
+    }
+
+    .info {
+      background: var(--accent-dim);
+      color: var(--accent);
+      border-left-color: var(--accent);
+    }
+
+    /* ── Divider ─────────────────────────────────────────── */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 12px 0;
+    }
+
+    /* ── Footer ──────────────────────────────────────────── */
+    .popup-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+      margin-top: 12px;
+    }
+
+    .footer-version {
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-family: var(--font-mono);
+    }
+
+    .footer-status {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 9px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #16a34a;
+      font-family: var(--font-display);
+      font-weight: 700;
+    }
+
+    .status-dot {
+      width: 5px; height: 5px;
+      background: #16a34a;
+      border-radius: 50%;
+      box-shadow: 0 0 0 2px rgba(22,163,74,0.2);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.5; }
+    }
+  </style>
+</head>
+<body>
+  <div class="popup-inner">
+
+    <!-- Header -->
+    <div class="popup-header">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7 1L2 7h4l-1 4 5-6H6l1-4z" fill="#fff"/>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-name">Surtr</div>
+          <div class="brand-sub">Session Saver</div>
+        </div>
+      </div>
+      <button class="theme-toggle" id="themeToggle" title="Toggle theme">
+        <div class="theme-toggle-dot"></div>
+        <span class="theme-toggle-label" id="themeLabel">Dark</span>
+      </button>
+    </div>
+
+    <!-- Server URL -->
+    <div class="form-section">
+      <div class="section-label">Server URL</div>
+      <input type="url" id="serverUrl" placeholder="https://yourdomain.com/surtr" autocomplete="off" />
+    </div>
+
+    <!-- API Key -->
+    <div class="form-section">
+      <div class="section-label">API Key</div>
+      <input type="text" id="apiKey" placeholder="Paste key from Dashboard" autocomplete="off" />
+    </div>
+
+    <!-- Auto-save Interval -->
+    <div class="form-section">
+      <div class="section-label">Auto-Save Interval</div>
+      <div class="interval-grid" id="intervalGroup">
+        <button class="interval-btn" data-value="0">Off</button>
+        <button class="interval-btn" data-value="5">5 min</button>
+        <button class="interval-btn" data-value="15">15 min</button>
+        <button class="interval-btn" data-value="30">30 min</button>
+        <button class="interval-btn" data-value="60">1 hr</button>
+        <button class="interval-btn" data-value="360">6 hr</button>
+        <button class="interval-btn" data-value="1440">24 hr</button>
+      </div>
+    </div>
+
+    <!-- Save Button -->
+    <button class="save-btn" id="saveBtn">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+        <polyline points="17 21 17 13 7 13 7 21"/>
+        <polyline points="7 3 7 8 15 8"/>
+      </svg>
+      Save Current Session
+    </button>
+
+    <!-- Status -->
+    <div id="status"></div>
+
+    <!-- Footer -->
+    <div class="popup-footer">
+      <span class="footer-version">v2.2</span>
+      <span class="footer-status">
+        <span class="status-dot"></span>
+        Extension Active
+      </span>
+    </div>
+
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

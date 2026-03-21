@@ -1,0 +1,171 @@
+/* ============================================================
+   MODAL — Tactical overlay style
+   ============================================================ */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 16, 24, 0.6);
+  backdrop-filter: blur(2px);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  padding: 1.5rem;
+}
+
+.modal-overlay.active { display: flex; }
+
+.modal {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-top: 2px solid var(--accent);
+  padding: 1.75rem;
+  width: 100%;
+  max-width: 480px;
+  border-radius: 6px;
+  box-shadow: 0 20px 60px rgba(10,16,24,.2);
+  animation: modalIn 0.2s ease;
+}
+
+/* Small variant (confirm dialogs) */
+.modal.small { max-width: 380px; }
+.modal.small p {
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-bottom: 1.25rem;
+}
+
+.modal h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: 1.25rem;
+  color: var(--primary);
+}
+
+/* Tactical bracket prefix on modal title */
+.modal h2::before {
+  content: '[ ';
+  color: var(--accent);
+  font-weight: 300;
+}
+.modal h2::after {
+  content: ' ]';
+  color: var(--accent);
+  font-weight: 300;
+}
+
+/* ── Tab List ─────────────────────────────────────────────── */
+.tab-list {
+  list-style: none;
+  margin: 0 0 1.25rem;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.tab-list::-webkit-scrollbar { width: 4px; }
+.tab-list::-webkit-scrollbar-track { background: var(--bg); }
+.tab-list::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 2px; }
+
+.tab-list li {
+  padding: 0.6rem 0.9rem;
+  font-size: 0.8rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--primary);
+  word-break: break-all;
+  transition: background 0.1s;
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+.tab-list li:last-child { border-bottom: none; }
+.tab-list li:hover { background: var(--bg); }
+
+/* Tab title in normal weight, URL in muted */
+.tab-list li strong { font-weight: 600; font-size: 0.8rem; }
+.tab-list li span { font-size: 0.72rem; color: var(--muted); margin-top: 0.1rem; }
+
+/* ── Actions ─────────────────────────────────────────────── */
+.modal-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  margin-top: 0.25rem;
+}
+
+.modal-actions button {
+  padding: 0.45rem 1rem;
+  border-radius: 4px;
+  font-family: 'Albert Sans', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.modal-actions .secondary {
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  color: var(--muted);
+}
+
+.modal-actions .secondary:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.modal-actions .primary {
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  color: #fff;
+}
+
+.modal-actions .primary:hover { opacity: 0.88; }
+
+/* ── Animation ───────────────────────────────────────────── */
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(-8px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ── Responsive ─────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .modal { padding: 1.4rem; }
+}
+
+@media (max-width: 480px) {
+  .modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .modal {
+    border-radius: 10px 10px 0 0;
+    max-width: 100%;
+    max-height: 88vh;
+    overflow-y: auto;
+    border-top: 2px solid var(--accent);
+    animation: slideUp 0.25s ease;
+  }
+
+  .modal.small { max-width: 100%; }
+
+  .modal-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .modal-actions button { width: 100%; padding: 0.65rem; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(24px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}

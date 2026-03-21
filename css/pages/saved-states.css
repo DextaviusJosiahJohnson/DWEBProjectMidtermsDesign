@@ -1,0 +1,82 @@
+/* ============================================================
+   SAVED STATES
+   ============================================================ */
+
+/* ── Filter Focus ────────────────────────────────────────── */
+.filter-bar input:focus,
+.filter-bar select:focus {
+  outline: none;
+  background: var(--card);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+/* ── Filter button ───────────────────────────────────────── */
+.filter-btn {
+  padding: 0.5rem 1.2rem;
+  border-radius: 4px;
+  border: none;
+  background: var(--primary);
+  color: #fff;
+  font-family: 'Albert Sans', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.filter-btn:hover { opacity: 0.85; }
+
+/* ── Save type badges ────────────────────────────────────── */
+.badge {
+  display: inline-block;
+  padding: 0.15rem 0.55rem;
+  border-radius: 3px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.badge.auto {
+  background: rgba(17,118,146,.1);
+  color: var(--accent);
+  border: 1px solid var(--accent-line);
+}
+
+.badge.manual {
+  background: var(--bg);
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+
+/* ── Card action buttons ─────────────────────────────────── */
+.state-actions .primary {
+  background: var(--primary);
+  color: #fff;
+  border: 1px solid var(--primary);
+  padding: 0.4rem 0.85rem;
+  border-radius: 4px;
+  font-family: 'Albert Sans', sans-serif;
+  font-size: 0.73rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.state-actions .primary:hover { opacity: 0.82; }
+
+/* ── Device group heading ────────────────────────────────── */
+.device-group { margin-bottom: 2rem; }
+
+.device-heading {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted-light);
+  margin-bottom: 0.75rem;
+  padding-left: 0.25rem;
+}

@@ -1,0 +1,755 @@
+/* SETTINGS CSS — The Division dark theme */
+
+.page-title {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--warm-white);
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-bright);
+  position: relative;
+}
+
+.page-title::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 48px;
+  height: 2px;
+  background: var(--orange);
+}
+
+/* ===============================
+   Settings Card
+   =============================== */
+
+.settings-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--border-bright);
+  border-radius: 2px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1rem;
+  transition: border-left-color 0.2s ease;
+  position: relative;
+}
+
+.settings-card:hover {
+  border-left-color: var(--orange);
+}
+
+/* Corner accent */
+.settings-card::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 10px;
+  height: 10px;
+  border-right: 1px solid var(--border-bright);
+  border-bottom: 1px solid var(--border-bright);
+  opacity: 0.5;
+}
+
+.settings-card h2 {
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--orange);
+  margin-bottom: 1rem;
+}
+
+/* ===============================
+   Setting Rows
+   =============================== */
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  gap: 1rem;
+}
+
+.setting-row.setting-row--column {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.setting-row.setting-row--column label {
+  font-weight: 600;
+  color: var(--secondary);
+  margin-bottom: 0.25rem;
+}
+
+.setting-row label {
+  font-size: 0.83rem;
+  color: var(--secondary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-family: var(--font-body);
+}
+
+.setting-description {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-bottom: 0.6rem;
+  max-width: 400px;
+  letter-spacing: 0.04em;
+}
+
+.hidden { display: none; }
+
+/* ===============================
+   Inputs
+   =============================== */
+
+.setting-row input[type="checkbox"] {
+  accent-color: var(--orange);
+  width: 14px;
+  height: 14px;
+}
+
+.setting-row input[type="email"],
+.setting-row select {
+  padding: 0.42rem 0.6rem;
+  border-radius: 2px;
+  border: 1px solid var(--border-bright);
+  background: var(--bg-navigation);
+  color: var(--primary);
+  font-size: 0.8rem;
+  font-family: var(--font-body);
+  min-width: 180px;
+  transition: all 0.2s ease;
+}
+
+.setting-row input[type="email"]:focus,
+.setting-row select:focus {
+  outline: none;
+  border-color: var(--orange);
+  box-shadow: 0 0 0 3px var(--orange-dim);
+}
+
+.setting-row select option {
+  background: var(--bg-surface);
+  color: var(--primary);
+}
+
+.setting-row input[disabled] {
+  background: var(--bg-navigation);
+  color: var(--muted);
+  cursor: not-allowed;
+  border-color: var(--border);
+}
+
+/* ===============================
+   Security Section
+   =============================== */
+
+.security-description {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 0.5rem;
+}
+
+.security-description p {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin: 0;
+  letter-spacing: 0.04em;
+}
+
+/* Secondary button */
+.secondary {
+  background: var(--bg-surface-raised);
+  color: var(--secondary);
+  border: 1px solid var(--border-bright);
+  padding: 0.48rem 0.9rem;
+  border-radius: 2px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: var(--font-display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: fit-content;
+}
+
+.secondary:hover {
+  background: var(--border-bright);
+  color: var(--warm-white);
+}
+
+/* ===============================
+   Collapsible
+   =============================== */
+
+.password-collapse {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.35s ease, opacity 0.25s ease;
+}
+
+.password-collapse.open {
+  opacity: 1;
+}
+
+/* ===============================
+   Password Fields
+   =============================== */
+
+.password-fields,
+.password-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  padding: 1rem;
+  background: var(--bg-navigation);
+  border: 1px solid var(--border-bright);
+  border-left: 2px solid var(--orange);
+  border-radius: 2px;
+}
+
+.password-fields input[type="password"],
+.password-form input[type="password"] {
+  padding: 0.6rem 0.8rem;
+  border-radius: 2px;
+  border: 1px solid var(--border-bright);
+  background: var(--bg-surface);
+  color: var(--primary);
+  font-size: 0.85rem;
+  font-family: var(--font-body);
+  width: 100%;
+  transition: all 0.2s ease;
+}
+
+.password-fields input[type="password"]:focus,
+.password-form input[type="password"]:focus {
+  outline: none;
+  border-color: var(--orange);
+  box-shadow: 0 0 0 3px var(--orange-dim);
+  background: var(--bg-surface-raised);
+}
+
+.password-fields input::placeholder,
+.password-form input::placeholder {
+  color: var(--muted);
+}
+
+/* ===============================
+   Strength Indicator
+   =============================== */
+
+.strength-wrapper {
+  height: 3px;
+  background: var(--border-bright);
+  border-radius: 1px;
+  overflow: hidden;
+  margin-top: 0.25rem;
+}
+
+.strength-bar {
+  height: 100%;
+  width: 0%;
+  transition: width 0.3s ease, background 0.3s ease;
+  border-radius: 1px;
+}
+
+#strengthText {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--muted);
+  margin-top: 0.2rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.error-message {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: #ff4400;
+  letter-spacing: 0.04em;
+}
+
+/* ===============================
+   Buttons
+   =============================== */
+
+.primary {
+  padding: 0.55rem 1.3rem;
+  border-radius: 2px;
+  border: none;
+  background: var(--orange);
+  color: #000;
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-family: var(--font-display);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.primary:hover {
+  background: var(--orange-hover);
+  box-shadow: 0 0 16px var(--orange-glow);
+}
+
+.password-fields .primary,
+.password-form .primary {
+  align-self: flex-start;
+  min-width: 140px;
+}
+
+button.danger {
+  padding: 0.55rem 1rem;
+  border-radius: 2px;
+  border: 1px solid #cc2200;
+  background: transparent;
+  color: #ff4400;
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-family: var(--font-display);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+button.danger:hover {
+  background: rgba(204, 34, 0, 0.12);
+  border-color: #ff4400;
+  box-shadow: 0 0 12px rgba(255, 68, 0, 0.2);
+}
+
+/* ===============================
+   Layout Actions
+   =============================== */
+
+.settings-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+/* Danger zone */
+.settings-card.danger-zone {
+  border: 1px solid rgba(204, 34, 0, 0.3);
+  border-left: 2px solid #cc2200;
+}
+
+.settings-card.danger-zone:hover {
+  border-left-color: #ff4400;
+}
+
+.settings-card.danger-zone h2 {
+  color: #ff4400;
+}
+
+.settings-card:last-of-type {
+  margin-bottom: 0;
+}
+
+/* ===============================
+   Responsive
+   =============================== */
+
+@media (max-width: 768px) {
+  .settings-card { padding: 1rem; }
+
+  .setting-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .setting-row input[type="email"],
+  .setting-row select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .password-fields .primary,
+  .password-form .primary,
+  .settings-actions .primary {
+    width: 100%;
+  }
+
+  .settings-actions { justify-content: stretch; }
+
+  .password-form,
+  .password-fields {
+    padding: 0.85rem;
+    max-width: 420px;
+    margin: 0.75rem auto 0 auto;
+  }
+}
+
+/* ============================================================
+   THEME SWITCHER CARD
+   ============================================================ */
+
+.theme-switcher-card {
+    /* Inherits .settings-card base; just needs its own transitions */
+    transition:
+        background 0.35s ease,
+        border-color 0.35s ease,
+        box-shadow 0.35s ease;
+}
+
+/* Preview states — applied when hovering a theme option */
+.theme-switcher-card.preview-minimal {
+    background: #FFFDF9;
+    border-color: #c8c4bb;
+    border-left-color: #117692;
+    box-shadow: 0 0 0 1px rgba(17,118,146,.1);
+}
+
+.theme-switcher-card.preview-division {
+    background: #161410;
+    border-color: #3a3028;
+    border-left-color: #FF7F00;
+    box-shadow: 0 0 20px rgba(255,127,0,.08);
+}
+
+/* Card heading morphs on preview */
+.theme-switcher-card.preview-minimal .settings-card-heading {
+    color: #117692;
+}
+
+.theme-switcher-card.preview-division .settings-card-heading {
+    color: #FF7F00;
+    font-family: 'Rajdhani', sans-serif;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+/* Subtitle text under heading */
+.theme-switcher-card.preview-minimal .theme-switcher-subtitle {
+    color: #6b7280;
+    font-family: 'Albert Sans', sans-serif;
+}
+
+.theme-switcher-card.preview-division .theme-switcher-subtitle {
+    color: #5e5248;
+    font-family: 'Share Tech Mono', monospace;
+    letter-spacing: 0.06em;
+}
+
+.theme-switcher-subtitle {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 0.15rem;
+    margin-bottom: 1.5rem;
+    transition: color 0.3s, font-family 0.3s;
+}
+
+/* ── Theme Options Row ─────────────────────────────────── */
+.theme-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+/* Each theme tile */
+.theme-option {
+    border-radius: 4px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    outline: none;
+}
+
+.theme-option:hover {
+    transform: translateY(-2px);
+}
+
+.theme-option.is-active {
+    border-color: var(--orange);
+    box-shadow: 0 0 0 3px var(--orange-dim);
+}
+
+/* Active checkmark badge */
+.theme-option .active-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--orange);
+    color: #000;
+    font-size: 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    opacity: 0;
+    transform: scale(0.6);
+    transition: opacity 0.2s, transform 0.2s;
+    z-index: 2;
+}
+
+.theme-option.is-active .active-badge {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* ── Mini Preview Thumbnails ────────────────────────────── */
+.theme-preview {
+    width: 100%;
+    height: 120px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* DIVISION preview thumbnail */
+.theme-option[data-theme-target="division"] .theme-preview {
+    background: #0e0d0b;
+    border-bottom: 1px solid #252018;
+}
+
+.theme-option[data-theme-target="division"] .preview-sidebar {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 28%;
+    background: #0a0908;
+    border-right: 1px solid #252018;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px 6px;
+}
+
+.theme-option[data-theme-target="division"] .preview-nav-item {
+    height: 7px;
+    border-radius: 1px;
+    background: #252018;
+}
+
+.theme-option[data-theme-target="division"] .preview-nav-item.active {
+    background: rgba(255,127,0,0.3);
+    border-left: 2px solid #FF7F00;
+}
+
+.theme-option[data-theme-target="division"] .preview-main {
+    position: absolute;
+    left: 28%; top: 0; right: 0; bottom: 0;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.theme-option[data-theme-target="division"] .preview-header {
+    height: 10px;
+    width: 55%;
+    background: #F4FFFF;
+    border-radius: 1px;
+    opacity: 0.8;
+}
+
+.theme-option[data-theme-target="division"] .preview-accent-line {
+    height: 2px;
+    width: 18px;
+    background: #FF7F00;
+    border-radius: 1px;
+    margin-top: -2px;
+}
+
+.theme-option[data-theme-target="division"] .preview-card {
+    height: 18px;
+    background: #161410;
+    border: 1px solid #252018;
+    border-left: 2px solid #FF7F00;
+    border-radius: 1px;
+    margin-top: 2px;
+}
+
+.theme-option[data-theme-target="division"] .preview-card + .preview-card {
+    border-left-color: #252018;
+    opacity: 0.7;
+}
+
+/* MINIMAL preview thumbnail */
+.theme-option[data-theme-target="minimal"] .theme-preview {
+    background: #FFFAF2;
+    border-bottom: 1px solid #e4e1d8;
+}
+
+.theme-option[data-theme-target="minimal"] .preview-sidebar {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 28%;
+    background: #FFFFFF;
+    border-right: 1px solid #e4e1d8;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px 6px;
+}
+
+.theme-option[data-theme-target="minimal"] .preview-nav-item {
+    height: 7px;
+    border-radius: 2px;
+    background: #f3f4f6;
+}
+
+.theme-option[data-theme-target="minimal"] .preview-nav-item.active {
+    background: rgba(17,118,146,.12);
+    border-left: 2px solid #117692;
+}
+
+.theme-option[data-theme-target="minimal"] .preview-main {
+    position: absolute;
+    left: 28%; top: 0; right: 0; bottom: 0;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.theme-option[data-theme-target="minimal"] .preview-header {
+    height: 10px;
+    width: 55%;
+    background: #0f1923;
+    border-radius: 1px;
+    opacity: 0.75;
+}
+
+.theme-option[data-theme-target="minimal"] .preview-accent-line {
+    height: 2px;
+    width: 18px;
+    background: #117692;
+    border-radius: 1px;
+    margin-top: -2px;
+}
+
+.theme-option[data-theme-target="minimal"] .preview-card {
+    height: 18px;
+    background: #FFFFFF;
+    border: 1px solid #e4e1d8;
+    border-left: 2px solid #117692;
+    border-radius: 3px;
+    margin-top: 2px;
+}
+
+.theme-option[data-theme-target="minimal"] .preview-card + .preview-card {
+    border-left-color: #e4e1d8;
+    opacity: 0.7;
+}
+
+/* ── Theme Label Row ────────────────────────────────────── */
+.theme-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.65rem 0.75rem 0.6rem;
+    transition: background 0.25s;
+}
+
+/* Division label */
+.theme-option[data-theme-target="division"] .theme-label {
+    background: #0e0d0b;
+}
+
+.theme-option[data-theme-target="division"] .theme-label-name {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #F4FFFF;
+}
+
+.theme-option[data-theme-target="division"] .theme-label-tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    color: #FF7F00;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+/* Logo decorative element — bottom-right of button */
+.theme-option[data-theme-target="division"] .theme-label-logo {
+    height: 18px;
+    width: auto;
+    opacity: 0.55;
+    filter: brightness(3) sepia(1) saturate(6) hue-rotate(10deg);
+    transition: opacity 0.2s;
+}
+
+.theme-option[data-theme-target="division"]:hover .theme-label-logo,
+.theme-option[data-theme-target="division"].is-active .theme-label-logo {
+    opacity: 0.9;
+}
+
+/* Minimal label */
+.theme-option[data-theme-target="minimal"] .theme-label {
+    background: #FFFFFF;
+    border-top: 1px solid #e4e1d8;
+}
+
+.theme-option[data-theme-target="minimal"] .theme-label-name {
+    font-family: 'Albert Sans', sans-serif;
+    font-weight: 700;
+    font-size: 0.82rem;
+    letter-spacing: -0.01em;
+    color: #0f1923;
+}
+
+.theme-option[data-theme-target="minimal"] .theme-label-tag {
+    font-family: 'Albert Sans', sans-serif;
+    font-size: 0.6rem;
+    color: #117692;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.theme-option[data-theme-target="minimal"] .theme-label-logo {
+    height: 18px;
+    width: auto;
+    opacity: 0.35;
+    filter: brightness(0.3) saturate(0);
+    transition: opacity 0.2s;
+}
+
+.theme-option[data-theme-target="minimal"]:hover .theme-label-logo,
+.theme-option[data-theme-target="minimal"].is-active .theme-label-logo {
+    opacity: 0.6;
+}
+
+/* ── Hover glow ring per theme ───────────────────────────── */
+.theme-option[data-theme-target="division"]:hover {
+    border-color: rgba(255,127,0,0.4);
+    box-shadow: 0 4px 20px rgba(255,127,0,0.15);
+}
+
+.theme-option[data-theme-target="minimal"]:hover {
+    border-color: rgba(17,118,146,.35);
+    box-shadow: 0 4px 20px rgba(17,118,146,.1);
+}
+
+@media (max-width: 560px) {
+    .theme-options {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "Surtr Session Saver",
+  "version": "2.2",
+  "description": "Save tabs, bookmarks, and history to your Surtr Dashboard.",
+  "permissions": [
+    "tabs",
+    "storage",
+    "alarms",
+    "bookmarks",
+    "history"
+  ],
+  "host_permissions": [
+    "http://localhost/*",
+    "http://localhost:8080/*",
+    "https://localhost/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "48": "icon.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js",
+    "scripts": ["background.js"]
+  }
+}

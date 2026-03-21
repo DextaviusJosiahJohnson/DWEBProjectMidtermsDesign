@@ -1,0 +1,202 @@
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Exo+2:wght@300;400;500;600&family=Albert+Sans:wght@300;400;500;600;700;800&display=swap');
+
+/* ============================================================
+   DEFAULT (Minimal / Teal) — no data-theme attribute needed.
+   Even if the theme script is blocked, users see teal.
+   ============================================================ */
+:root {
+    --bg:                #FFFAF2;
+    --bg-surface:        #FFFFFF;
+    --bg-surface-raised: #FFFDF9;
+    --bg-navigation:     #117692;
+
+    --orange:       #117692;
+    --orange-dim:   rgba(17,118,146,.1);
+    --orange-glow:  rgba(17,118,146,.25);
+    --orange-hover: #0e6180;
+    --warm-white:   #0f1923;
+
+    --primary:       #0f1923;
+    --secondary:     #374151;
+    --muted:         #6b7280;
+    --muted-light:   #9ca3af;
+    --card:          #FFFFFF;
+    --accent:        #117692;
+    --accent-dim:    rgba(17,118,146,.1);
+    --accent-line:   rgba(17,118,146,.3);
+    --bg-navigation-alias: #FFFFFF;
+
+    --border:        #e4e1d8;
+    --border-strong: #c8c4bb;
+    --border-bright: #c8c4bb;
+
+    --shadow-sm: 0 2px 8px rgba(15,25,35,.08);
+
+    --header-bg: #117692;
+
+    --font-display: 'Albert Sans', system-ui, sans-serif;
+    --font-mono:    'Albert Sans', system-ui, sans-serif;
+    --font-body:    'Albert Sans', system-ui, sans-serif;
+}
+
+/* ============================================================
+   EXPLICIT MINIMAL — same as :root, keeps data-theme="minimal"
+   working consistently for the theme switcher.
+   ============================================================ */
+[data-theme="minimal"] {
+    --bg:                #FFFAF2;
+    --bg-surface:        #FFFFFF;
+    --bg-surface-raised: #FFFDF9;
+    --bg-navigation:     #117692;
+
+    --orange:       #117692;
+    --orange-dim:   rgba(17,118,146,.1);
+    --orange-glow:  rgba(17,118,146,.25);
+    --orange-hover: #0e6180;
+    --warm-white:   #0f1923;
+
+    --primary:       #0f1923;
+    --secondary:     #374151;
+    --muted:         #6b7280;
+    --muted-light:   #9ca3af;
+    --card:          #FFFFFF;
+    --accent:        #117692;
+    --accent-dim:    rgba(17,118,146,.1);
+    --accent-line:   rgba(17,118,146,.3);
+    --bg-navigation-alias: #FFFFFF;
+
+    --border:        #e4e1d8;
+    --border-strong: #c8c4bb;
+    --border-bright: #c8c4bb;
+
+    --shadow-sm: 0 2px 8px rgba(15,25,35,.08);
+    --header-bg: #117692;
+
+    --font-display: 'Albert Sans', system-ui, sans-serif;
+    --font-mono:    'Albert Sans', system-ui, sans-serif;
+    --font-body:    'Albert Sans', system-ui, sans-serif;
+}
+
+/* ============================================================
+   DIVISION DARK — activated via data-theme="division"
+   ============================================================ */
+[data-theme="division"] {
+    --bg:                #0e0d0b;
+    --bg-surface:        #161410;
+    --bg-surface-raised: #1d1a16;
+    --bg-navigation:     #0a0908;
+
+    --orange:       #FF7F00;
+    --orange-dim:   rgba(255,127,0,0.12);
+    --orange-glow:  rgba(255,127,0,0.3);
+    --orange-hover: #e67200;
+    --warm-white:   #F4FFFF;
+
+    --primary:       #ddd5c8;
+    --secondary:     #a89688;
+    --muted:         #5e5248;
+    --muted-light:   #7a6e64;
+    --card:          #161410;
+    --accent:        #FF7F00;
+    --accent-dim:    rgba(255,127,0,0.12);
+    --accent-line:   rgba(255,127,0,0.3);
+    --bg-navigation-alias: #0a0908;
+
+    --border:        #252018;
+    --border-strong: #3a3028;
+    --border-bright: #3a3028;
+
+    --shadow-sm: 0 2px 8px rgba(0,0,0,.4);
+
+    --header-bg: #0a0908;
+
+    --font-display: 'Rajdhani', sans-serif;
+    --font-mono:    'Share Tech Mono', monospace;
+    --font-body:    'Exo 2', sans-serif;
+}
+
+/* ============================================================
+   GLOBAL RESET & BASE
+   ============================================================ */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-body);
+}
+
+body {
+    background-color: var(--bg);
+    color: var(--primary);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+/* Scanline overlay — Division only */
+[data-theme="division"] body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 3px,
+        rgba(0,0,0,0.06) 3px,
+        rgba(0,0,0,0.06) 4px
+    );
+    pointer-events: none;
+    z-index: 9998;
+}
+
+.main::before {
+    content: "";
+    position: absolute;
+    top: -10vw;
+    right: -15vw;
+    width: 50vw;
+    height: 50vw;
+    max-width: 700px;
+    max-height: 700px;
+    background-image: url("../img/bg-logo.png");
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: top right;
+    opacity: 0.04;
+    filter: brightness(0.3) saturate(0);
+    pointer-events: none;
+    z-index: 0;
+}
+
+[data-theme="division"] .main::before {
+    filter: brightness(3) sepia(1) saturate(6) hue-rotate(10deg);
+    opacity: 0.04;
+}
+
+.main > * {
+    position: relative;
+    z-index: 1;
+}
+
+a {
+    text-decoration: none;
+    color: var(--primary);
+    transition: color 0.15s ease;
+}
+
+a:hover { color: var(--orange); }
+
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: var(--bg-navigation); }
+::-webkit-scrollbar-thumb { background: var(--accent); }
+
+[data-theme="minimal"] .mobile-top {
+    border-bottom: 1px solid var(--border);
+}
+
+[data-theme="minimal"] .sidebar {
+    border-right: 1px solid var(--border);
+}
+
+[data-theme="minimal"] .auth-container {
+    box-shadow: 0 16px 48px rgba(10,16,24,.08);
+}

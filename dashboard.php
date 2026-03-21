@@ -1,0 +1,132 @@
+<?php
+require 'includes/auth.php';
+require 'database/db.php';
+
+$user_id   = $_SESSION['user_id'];
+$user_name = $_SESSION['fullname'];
+
+$stmt = $pdo->prepare("SELECT COUNT(*) FROM browser_states WHERE user_id = ?");
+$stmt->execute([$user_id]);
+$total_sessions = $stmt->fetchColumn();
+
+$stmt = $pdo->prepare("SELECT COUNT(DISTINCT device_id) FROM browser_states WHERE user_id = ?");
+$stmt->execute([$user_id]);
+$active_devices = $stmt->fetchColumn();
+
+$stmt = $pdo->prepare(
+    "SELECT bs.*, d.device_name AS device,
+     (SELECT COUNT(*) FROM tabs t WHERE t.state_id = bs.id) AS tab_count
+     FROM browser_states bs
+     LEFT JOIN devices d ON bs.device_id = d.id
+     WHERE bs.user_id = ?
+     ORDER BY bs.created_at DESC LIMIT 3"
+);
+$stmt->execute([$user_id]);
+$recent_states = $stmt->fetchAll();
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | Smart Browser State Manager</title>
+  <script nonce="<?= $nonce ?>">(function(){var t=localStorage.getItem("surtr_theme")||"minimal";document.documentElement.setAttribute("data-theme",t);})();</script>
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/pages/dashboard.css">
+</head>
+<body>
+
+  <div class="mobile-top">
+    <div class="burger" id="burgerBtn">☰</div>
+  </div>
+
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">Smart Browser State</div>
+      <div class="nav-item active">Dashboard</div>
+      <a class="nav-item" href="saved-states.php">Saved States</a>
+      <a class="nav-item" href="bookmarks.php">Bookmarks</a>
+      <a class="nav-item" href="search-history.php">Search History</a>
+      <a class="nav-item" href="settings.php">Settings</a>
+      <a class="nav-item" href="logout.php">Logout</a>
+    </aside>
+
+    <main class="main">
+      <div class="header">
+        <h1>Dashboard</h1>
+        <div class="user">Welcome, <?= htmlspecialchars($user_name) ?></div>
+      </div>
+
+      <section class="status-bar">
+        <div class="status-item">
+          <span class="label">API Connection</span>
+          <span class="value active"><span class="dot"></span> Active</span>
+        </div>
+        <div class="status-item">
+          <span class="label">Your API Key</span>
+          <span class="value" style="font-size:0.8rem;font-family:monospace;">
+            (To access API Key, Check Settings)
+          </span>
+        </div>
+      </section>
+
+      <section class="cards">
+        <div class="card">
+          <h2><?= $total_sessions ?></h2>
+          <p>Total Saved Sessions</p>
+        </div>
+        <div class="card">
+          <h2><?= $active_devices ?></h2>
+          <p>Active Devices</p>
+        </div>
+        <div class="card">
+          <h2>—</h2>
+          <p>Auto-Saves</p>
+        </div>
+      </section>
+
+      <section class="table-container">
+        <h3>Recent Browser States</h3>
+        <?php if (count($recent_states) > 0): ?>
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th><th>Device</th><th>Tabs</th><th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php foreach ($recent_states as $state): ?>
+            <tr>
+              <td><?= date("M d, Y", strtotime($state['created_at'])) ?></td>
+              <td><?= htmlspecialchars($state['device'] ?? 'Unknown') ?></td>
+              <td><?= intval($state['tab_count']) ?></td>
+              <td>
+                <a href="#" class="view-btn"
+                   data-state-id="<?= intval($state['id']) ?>">View</a>
+              </td>
+            </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+        <?php else: ?>
+          <p style="padding:1rem;color:#666;">No sessions saved yet.</p>
+        <?php endif; ?>
+      </section>
+    </main>
+  </div>
+
+  <?php include 'includes/modal.php'; ?>
+  <?php include 'includes/restore-confirmation.php'; ?>
+
+  <script nonce="<?= $nonce ?>">
+    const API_BASE_URL = 'ajax/';
+    const CSRF_TOKEN   = '<?= $_SESSION['csrf_token'] ?>';
+  </script>
+  <script src="script/modal.js"></script>
+  <script src="script/nav.js"></script>
+  <script src="script/dashboard.js"></script>
+  <script src="script/theme-switcher.js"></script>
+
+</body>
+</html>
